@@ -1,262 +1,2873 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="bn" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Question Maker Pro - Final Fix</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f0a1e">
+<meta name="description" content="Question Maker Pro Ultimate - Premium AI-Powered Exam Builder">
+<title>Question Maker Pro Ultimate</title>
+<link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;Question Maker Pro&quot;,&quot;short_name&quot;:&quot;QMP&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;#0f0a1e&quot;,&quot;theme_color&quot;:&quot;#6c3fef&quot;}">
 
-    <style>
-        :root {
-            --font-main: 'Nikosh', 'SolaimanLipi', 'Hind Siliguri', sans-serif;
-            --primary: #1e3a8a;
-            --accent: #f59e0b;
-            --bg: #f8fafc;
-            --border: #cbd5e1;
-        }
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-        body { font-family: var(--font-main); background-color: var(--bg); margin: 0; padding: 10px; }
-        .app-header { text-align: center; background: var(--primary); color: white; padding: 10px; border-radius: 8px 8px 0 0; }
-        .container { max-width: 1100px; margin: 0 auto; background: white; padding: 20px; border-radius: 0 0 8px 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        
-        .toolbar-box { background: #f1f5f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
-        .input-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
-        input, select, textarea { padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-family: var(--font-main); font-size: 14px; width: 100%; box-sizing: border-box; }
+<!-- Libraries -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+<link rel="stylesheet" href="https://unpkg.com/quill@2.0.2/dist/quill.snow.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
-        .selection-row { display: flex; gap: 20px; background: #fffbeb; padding: 12px; border-radius: 6px; border: 1px solid #fef3c7; margin-bottom: 15px; align-items: center; }
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script src="https://unpkg.com/quill@2.0.2/dist/quill.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 
-        .tool-panel { background: #eff6ff; padding: 15px; border-radius: 8px; border: 1px solid #bfdbfe; display: flex; flex-direction: column; gap: 15px; }
-        .tool-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
-        .tool-group { display: flex; flex-direction: column; gap: 4px; }
-        .tool-group label { font-size: 12px; font-weight: bold; color: #475569; }
+<style>
+/* ============================================================
+   CSS VARIABLES & ROOT
+   ============================================================ */
+:root {
+  /* Dark Theme (default) */
+  --bg-base: #080612;
+  --bg-surface: #0f0a1e;
+  --bg-card: rgba(255,255,255,0.04);
+  --bg-card-hover: rgba(255,255,255,0.07);
+  --bg-glass: rgba(255,255,255,0.05);
+  --bg-glass-strong: rgba(255,255,255,0.09);
+  --border: rgba(255,255,255,0.08);
+  --border-accent: rgba(108,63,239,0.4);
+  --text-primary: #f0ecff;
+  --text-secondary: rgba(240,236,255,0.6);
+  --text-muted: rgba(240,236,255,0.35);
+  
+  /* Brand Colors */
+  --purple: #6c3fef;
+  --purple-light: #9b6dff;
+  --purple-glow: rgba(108,63,239,0.3);
+  --cyan: #00d4ff;
+  --cyan-glow: rgba(0,212,255,0.2);
+  --pink: #ff3d9a;
+  --pink-glow: rgba(255,61,154,0.2);
+  --gold: #ffd700;
+  --emerald: #00e5a0;
+  
+  /* Gradients */
+  --grad-primary: linear-gradient(135deg, #6c3fef 0%, #9b6dff 100%);
+  --grad-cyber: linear-gradient(135deg, #00d4ff 0%, #6c3fef 50%, #ff3d9a 100%);
+  --grad-gold: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+  --grad-emerald: linear-gradient(135deg, #00e5a0 0%, #00d4ff 100%);
+  --grad-surface: linear-gradient(135deg, rgba(108,63,239,0.1) 0%, rgba(0,212,255,0.05) 100%);
+  
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+  --shadow-md: 0 8px 32px rgba(0,0,0,0.4);
+  --shadow-lg: 0 16px 64px rgba(0,0,0,0.5);
+  --shadow-purple: 0 8px 32px rgba(108,63,239,0.3);
+  --shadow-cyan: 0 8px 32px rgba(0,212,255,0.2);
+  
+  /* Layout */
+  --sidebar-w: 260px;
+  --nav-h: 60px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  
+  /* Fonts */
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'Hind Siliguri', sans-serif;
+  
+  /* Animation */
+  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-        .editor-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
-        .cq-box { background: #ffffff; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; }
-        .editable-area { min-height: 120px; border: 1px solid var(--border); background: #fff; padding: 10px; border-radius: 4px; overflow-y: auto; font-size: 15px; outline: none; margin: 10px 0; }
+[data-theme="light"] {
+  --bg-base: #f0eeff;
+  --bg-surface: #faf9ff;
+  --bg-card: rgba(255,255,255,0.8);
+  --bg-card-hover: rgba(255,255,255,0.95);
+  --bg-glass: rgba(255,255,255,0.6);
+  --bg-glass-strong: rgba(255,255,255,0.85);
+  --border: rgba(108,63,239,0.15);
+  --border-accent: rgba(108,63,239,0.35);
+  --text-primary: #1a0a3e;
+  --text-secondary: rgba(26,10,62,0.65);
+  --text-muted: rgba(26,10,62,0.4);
+  --shadow-sm: 0 2px 8px rgba(108,63,239,0.1);
+  --shadow-md: 0 8px 32px rgba(108,63,239,0.15);
+  --shadow-lg: 0 16px 64px rgba(108,63,239,0.2);
+}
 
-        table { border-collapse: collapse; margin: 5px auto !important; width: auto; background: white; }
-        table td { border: 1px solid black; padding: 2px 8px; text-align: center; min-width: 40px; }
-        .table-label { font-weight: bold; font-size: 13px; display: block; margin-bottom: 2px; }
-        .side-by-side { display: flex; justify-content: center; gap: 20px; margin: 5px 0; }
-        .up-down { display: flex; flex-direction: column; align-items: center; gap: 10px; margin: 5px 0; }
-        .uddipok-img { max-width: 130px; height: auto; display: block; margin: 5px auto; }
+/* ============================================================
+   BASE RESET
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: var(--transition-slow);
+}
 
-        #result-container { padding: 40px 0; background: #64748b; margin-top: 40px; }
-        .page { width: 297mm; height: 210mm; background: white; display: flex; position: relative; margin: 0 auto; box-sizing: border-box; overflow: hidden; }
-        .column { width: 50%; padding: 5mm 12mm; box-sizing: border-box; height: 100%; }
-        .cut-mark { position: absolute; left: 50%; top: 0; bottom: 0; border-left: 1px dashed #999; }
-        
-        .header { text-align: center; margin: 0; padding: 0; border-bottom: 1.5px solid #000; }
-        .header h3 { margin: 0; padding-top: 2px; font-size: 19px; line-height: 1.1; }
-        .header div { margin: 0; padding: 0; font-size: 13px; line-height: 1.2; }
-        
-        .info-bar { display: flex; justify-content: space-between; font-weight: bold; font-size: 13px; margin-top: 3px; margin-bottom: 5px; }
-        .section-title { display: flex; justify-content: space-between; font-weight: bold; margin-top: 5px; font-size: 14px; border-bottom: 0.5px solid #ccc; }
-        .cq-instruction { text-align: center; font-weight: bold; margin: 4px 0; font-size: 13px; text-decoration: underline; }
-        .uddipok-text { line-height: 1.3; margin: 4px 0; font-size: 13.5px; }
-        .q-line { display: flex; justify-content: space-between; font-size: 13.5px; margin-top: 1px; padding-left: 10px; }
-        .q-mark { font-weight: normal; }
+/* Background mesh */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background: 
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(108,63,239,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 80%, rgba(0,212,255,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 60% 20%, rgba(255,61,154,0.05) 0%, transparent 50%);
+  pointer-events: none; z-index: 0;
+}
 
-        .btn { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .btn-preview { background: #334155; color: white; }
-        .btn-pdf { background: #16a34a; color: white; }
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 10px; }
 
-        @media print { 
-            @page { size: A4 landscape; margin: 0; }
-            body { padding: 0; margin: 0; }
-            .container, .app-header { display: none !important; } 
-            #result-container { padding: 0; margin: 0; background: none; } 
-            .page { border: none; margin: 0; box-shadow: none; } 
-        }
-    </style>
+/* ============================================================
+   LOADING SCREEN
+   ============================================================ */
+#loading-screen {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--bg-base);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 24px;
+}
+.loader-logo {
+  font-family: var(--font-display);
+  font-size: 32px; font-weight: 800;
+  background: var(--grad-cyber);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+.loader-bar-wrap {
+  width: 200px; height: 4px;
+  background: var(--bg-glass-strong);
+  border-radius: 10px; overflow: hidden;
+}
+.loader-bar {
+  height: 100%; width: 0%;
+  background: var(--grad-primary);
+  border-radius: 10px;
+  animation: loadBar 2s ease forwards;
+}
+@keyframes loadBar { to { width: 100%; } }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+#app { display: flex; min-height: 100vh; position: relative; z-index: 1; }
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+#sidebar {
+  width: var(--sidebar-w);
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  position: fixed; left: 0; top: 0; bottom: 0;
+  z-index: 200; overflow-y: auto;
+  transition: var(--transition);
+}
+#sidebar.collapsed { width: 68px; }
+.sidebar-logo {
+  padding: 20px 20px 16px;
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.logo-icon {
+  width: 38px; height: 38px;
+  background: var(--grad-primary);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: white; flex-shrink: 0;
+  box-shadow: var(--shadow-purple);
+}
+.logo-text {
+  font-family: var(--font-display);
+  font-size: 15px; font-weight: 700;
+  background: var(--grad-primary);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  line-height: 1.2; white-space: nowrap;
+}
+.logo-sub { font-size: 10px; color: var(--text-muted); white-space: nowrap; }
+
+.sidebar-section { padding: 16px 12px 8px; }
+.sidebar-section-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 1.5px;
+  color: var(--text-muted); text-transform: uppercase;
+  padding: 0 8px; margin-bottom: 6px; white-space: nowrap; overflow: hidden;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  cursor: pointer; transition: var(--transition);
+  color: var(--text-secondary); font-size: 14px;
+  font-weight: 500; position: relative; overflow: hidden;
+  white-space: nowrap;
+}
+.nav-item:hover { background: var(--bg-glass-strong); color: var(--text-primary); }
+.nav-item.active {
+  background: linear-gradient(135deg, rgba(108,63,239,0.2), rgba(108,63,239,0.1));
+  color: var(--purple-light);
+  border: 1px solid var(--border-accent);
+}
+.nav-item.active::before {
+  content: '';
+  position: absolute; left: 0; top: 20%; bottom: 20%;
+  width: 3px; background: var(--grad-primary); border-radius: 2px;
+}
+.nav-icon { width: 20px; text-align: center; flex-shrink: 0; font-size: 15px; }
+.nav-badge {
+  margin-left: auto; background: var(--grad-primary);
+  color: white; font-size: 10px; font-weight: 700;
+  padding: 2px 7px; border-radius: 20px; flex-shrink: 0;
+}
+
+.sidebar-footer {
+  margin-top: auto; padding: 16px 12px;
+  border-top: 1px solid var(--border);
+}
+.user-card {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px; border-radius: var(--radius-md);
+  background: var(--bg-glass-strong); cursor: pointer;
+  transition: var(--transition);
+}
+.user-card:hover { background: var(--bg-card-hover); }
+.user-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--grad-cyber);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; color: white; flex-shrink: 0;
+}
+.user-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; }
+.user-role { font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+
+/* ============================================================
+   MAIN AREA
+   ============================================================ */
+#main-content {
+  margin-left: var(--sidebar-w);
+  flex: 1; display: flex; flex-direction: column;
+  min-height: 100vh; transition: var(--transition);
+}
+#main-content.expanded { margin-left: 68px; }
+
+/* ============================================================
+   TOPBAR
+   ============================================================ */
+#topbar {
+  height: var(--nav-h);
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 24px; gap: 16px;
+  position: sticky; top: 0; z-index: 100;
+}
+.topbar-toggle {
+  width: 36px; height: 36px; border-radius: var(--radius-sm);
+  background: var(--bg-glass-strong); border: 1px solid var(--border);
+  color: var(--text-secondary); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition); flex-shrink: 0;
+}
+.topbar-toggle:hover { color: var(--purple-light); border-color: var(--border-accent); }
+
+.topbar-search {
+  flex: 1; max-width: 380px;
+  background: var(--bg-glass-strong);
+  border: 1px solid var(--border);
+  border-radius: 30px; padding: 0 16px; height: 36px;
+  display: flex; align-items: center; gap: 10px;
+  transition: var(--transition);
+}
+.topbar-search:focus-within { border-color: var(--border-accent); box-shadow: 0 0 0 3px var(--purple-glow); }
+.topbar-search input {
+  background: none; border: none; outline: none;
+  color: var(--text-primary); font-family: var(--font-body);
+  font-size: 13px; flex: 1;
+}
+.topbar-search input::placeholder { color: var(--text-muted); }
+.topbar-search i { color: var(--text-muted); font-size: 13px; }
+
+.topbar-actions { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.topbar-btn {
+  width: 36px; height: 36px; border-radius: var(--radius-sm);
+  background: var(--bg-glass-strong); border: 1px solid var(--border);
+  color: var(--text-secondary); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition); position: relative;
+}
+.topbar-btn:hover { color: var(--purple-light); border-color: var(--border-accent); }
+.notif-dot {
+  position: absolute; top: 6px; right: 6px;
+  width: 7px; height: 7px; background: var(--pink);
+  border-radius: 50%; border: 1px solid var(--bg-surface);
+}
+
+/* ============================================================
+   PAGES
+   ============================================================ */
+.page-view { display: none; padding: 28px; animation: fadeIn 0.3s ease; }
+.page-view.active { display: block; }
+@keyframes fadeIn { from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:translateY(0)} }
+
+.page-header { margin-bottom: 28px; }
+.page-title {
+  font-family: var(--font-display); font-size: 26px; font-weight: 700;
+  background: var(--grad-primary);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  line-height: 1.2;
+}
+.page-subtitle { font-size: 14px; color: var(--text-secondary); margin-top: 4px; }
+
+/* ============================================================
+   CARDS & GLASS
+   ============================================================ */
+.glass-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  transition: var(--transition);
+}
+.glass-card:hover { background: var(--bg-card-hover); border-color: var(--border-accent); }
+
+.stat-card {
+  padding: 22px 24px;
+  display: flex; flex-direction: column; gap: 12px;
+  position: relative; overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute; top: -20px; right: -20px;
+  width: 80px; height: 80px; border-radius: 50%;
+  opacity: 0.12;
+}
+.stat-card.purple::before { background: var(--purple); }
+.stat-card.cyan::before { background: var(--cyan); }
+.stat-card.pink::before { background: var(--pink); }
+.stat-card.gold::before { background: var(--gold); }
+.stat-card.emerald::before { background: var(--emerald); }
+
+.stat-icon {
+  width: 44px; height: 44px; border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.stat-icon.purple { background: rgba(108,63,239,0.15); color: var(--purple-light); }
+.stat-icon.cyan { background: rgba(0,212,255,0.1); color: var(--cyan); }
+.stat-icon.pink { background: rgba(255,61,154,0.1); color: var(--pink); }
+.stat-icon.gold { background: rgba(255,215,0,0.1); color: var(--gold); }
+.stat-icon.emerald { background: rgba(0,229,160,0.1); color: var(--emerald); }
+
+.stat-value {
+  font-family: var(--font-display); font-size: 28px; font-weight: 800;
+  color: var(--text-primary); line-height: 1;
+}
+.stat-label { font-size: 12px; color: var(--text-secondary); font-weight: 500; }
+.stat-trend { font-size: 11px; color: var(--emerald); display: flex; align-items: center; gap: 4px; }
+
+/* ============================================================
+   GRID LAYOUTS
+   ============================================================ */
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.grid-auto { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px; padding: 10px 20px; border-radius: var(--radius-md);
+  font-family: var(--font-body); font-size: 14px; font-weight: 600;
+  cursor: pointer; border: none; transition: var(--transition);
+  text-decoration: none; white-space: nowrap; position: relative; overflow: hidden;
+}
+.btn::after {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(255,255,255,0);
+  transition: var(--transition);
+}
+.btn:hover::after { background: rgba(255,255,255,0.07); }
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  background: var(--grad-primary);
+  color: white; box-shadow: var(--shadow-purple);
+}
+.btn-primary:hover { box-shadow: 0 8px 40px rgba(108,63,239,0.5); transform: translateY(-1px); }
+
+.btn-cyber {
+  background: linear-gradient(135deg, #00d4ff, #6c3fef);
+  color: white; box-shadow: var(--shadow-cyan);
+}
+.btn-cyber:hover { box-shadow: 0 8px 40px rgba(0,212,255,0.4); transform: translateY(-1px); }
+
+.btn-outline {
+  background: transparent; color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+.btn-outline:hover { border-color: var(--border-accent); color: var(--purple-light); background: rgba(108,63,239,0.05); }
+
+.btn-ghost { background: var(--bg-glass-strong); color: var(--text-secondary); }
+.btn-ghost:hover { color: var(--text-primary); }
+
+.btn-danger { background: linear-gradient(135deg, #ff3d9a, #ff0066); color: white; }
+.btn-success { background: linear-gradient(135deg, #00e5a0, #00b87c); color: white; }
+.btn-gold { background: var(--grad-gold); color: #1a0a00; }
+
+.btn-sm { padding: 7px 14px; font-size: 12px; border-radius: var(--radius-sm); }
+.btn-lg { padding: 14px 28px; font-size: 16px; }
+.btn-icon { width: 36px; height: 36px; padding: 0; border-radius: var(--radius-sm); }
+
+/* Floating Action Button */
+#fab {
+  position: fixed; bottom: 28px; right: 28px; z-index: 300;
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--grad-primary);
+  color: white; font-size: 22px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; border: none;
+  box-shadow: 0 8px 24px rgba(108,63,239,0.5);
+  transition: var(--transition);
+  animation: fabPulse 2s ease-in-out infinite;
+}
+#fab:hover { transform: scale(1.12) rotate(15deg); box-shadow: 0 12px 40px rgba(108,63,239,0.6); }
+@keyframes fabPulse {
+  0%,100%{box-shadow:0 8px 24px rgba(108,63,239,0.5)}
+  50%{box-shadow:0 8px 40px rgba(108,63,239,0.8), 0 0 0 8px rgba(108,63,239,0.1)}
+}
+
+/* ============================================================
+   FORM ELEMENTS
+   ============================================================ */
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); letter-spacing: 0.5px; }
+.form-control {
+  background: var(--bg-glass-strong);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  color: var(--text-primary);
+  font-family: var(--font-body); font-size: 14px;
+  transition: var(--transition); outline: none; width: 100%;
+}
+.form-control:focus { border-color: var(--border-accent); box-shadow: 0 0 0 3px var(--purple-glow); }
+.form-control::placeholder { color: var(--text-muted); }
+select.form-control { cursor: pointer; }
+textarea.form-control { resize: vertical; min-height: 80px; }
+
+.input-group { display: flex; gap: 10px; align-items: flex-end; }
+.input-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; }
+
+/* ============================================================
+   TABS
+   ============================================================ */
+.tab-bar {
+  display: flex; gap: 4px; background: var(--bg-glass);
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 4px; margin-bottom: 20px; overflow-x: auto;
+}
+.tab-btn {
+  padding: 8px 18px; border-radius: var(--radius-md);
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  border: none; background: none; color: var(--text-secondary);
+  transition: var(--transition); white-space: nowrap;
+}
+.tab-btn.active {
+  background: var(--grad-primary); color: white;
+  box-shadow: var(--shadow-purple);
+}
+.tab-btn:not(.active):hover { background: var(--bg-glass-strong); color: var(--text-primary); }
+.tab-content { display: none; }
+.tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+
+/* ============================================================
+   QUESTION EDITOR AREA
+   ============================================================ */
+.editor-wrap {
+  background: var(--bg-glass-strong);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden;
+}
+.editor-toolbar {
+  padding: 10px 14px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  background: rgba(0,0,0,0.1);
+}
+.editor-btn {
+  width: 30px; height: 30px; border-radius: 6px;
+  background: var(--bg-glass-strong); border: 1px solid var(--border);
+  color: var(--text-secondary); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; transition: var(--transition);
+}
+.editor-btn:hover { background: var(--bg-card-hover); color: var(--purple-light); border-color: var(--border-accent); }
+.editor-sep { width: 1px; height: 20px; background: var(--border); }
+.editor-area {
+  min-height: 120px; padding: 14px;
+  color: var(--text-primary); font-family: var(--font-body);
+  font-size: 15px; outline: none;
+  line-height: 1.7;
+}
+.editor-area:empty::before { content: attr(data-placeholder); color: var(--text-muted); pointer-events: none; }
+
+/* ============================================================
+   QUESTION CARD
+   ============================================================ */
+.q-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px; margin-bottom: 12px;
+  transition: var(--transition); cursor: pointer;
+  position: relative; overflow: hidden;
+}
+.q-card::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px; background: var(--grad-primary);
+  border-radius: 2px 0 0 2px;
+}
+.q-card:hover { background: var(--bg-card-hover); border-color: var(--border-accent); transform: translateX(2px); }
+.q-card.dragging { opacity: 0.5; border: 2px dashed var(--purple); }
+.q-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.q-num {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--grad-primary); color: white;
+  font-size: 12px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.q-type-badge {
+  padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+}
+.q-type-badge.cq { background: rgba(108,63,239,0.15); color: var(--purple-light); border: 1px solid rgba(108,63,239,0.2); }
+.q-type-badge.short { background: rgba(0,212,255,0.1); color: var(--cyan); border: 1px solid rgba(0,212,255,0.2); }
+.q-type-badge.mcq { background: rgba(255,61,154,0.1); color: var(--pink); border: 1px solid rgba(255,61,154,0.2); }
+.q-mark-badge {
+  margin-left: auto; background: var(--bg-glass-strong);
+  border: 1px solid var(--border);
+  padding: 3px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 700; color: var(--gold);
+}
+.q-drag-handle { color: var(--text-muted); cursor: grab; padding: 4px; font-size: 14px; }
+.q-drag-handle:active { cursor: grabbing; }
+.q-card-actions { display: flex; gap: 8px; margin-top: 10px; }
+
+/* ============================================================
+   MCQ OPTIONS
+   ============================================================ */
+.mcq-options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.mcq-option {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--bg-glass); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 8px 12px;
+  cursor: pointer; transition: var(--transition);
+}
+.mcq-option:hover { border-color: var(--border-accent); background: var(--bg-glass-strong); }
+.mcq-option.correct { border-color: rgba(0,229,160,0.4); background: rgba(0,229,160,0.08); }
+.option-letter {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--bg-glass-strong); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; flex-shrink: 0;
+}
+.mcq-option.correct .option-letter { background: var(--emerald); color: #000; border-color: var(--emerald); }
+
+/* ============================================================
+   CHART CONTAINER
+   ============================================================ */
+.chart-wrap {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 20px;
+}
+.chart-title { font-family: var(--font-display); font-size: 14px; font-weight: 600; margin-bottom: 16px; }
+
+/* ============================================================
+   PREVIEW / PRINT PAGE
+   ============================================================ */
+#preview-container {
+  background: #4a4a4a;
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  margin-top: 20px;
+}
+.paper-page {
+  width: 297mm; max-width: 100%;
+  min-height: 210mm;
+  background: white; color: #000;
+  margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr;
+  position: relative; overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.paper-column {
+  padding: 8mm 10mm;
+  border-right: 1px dashed #ccc;
+  font-family: 'Hind Siliguri', sans-serif;
+  font-size: 13px; color: #000;
+}
+.paper-column:last-child { border-right: none; }
+.paper-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 6px; margin-bottom: 6px; }
+.paper-header h3 { font-size: 18px; margin: 0; line-height: 1.2; }
+.paper-header .exam-info { font-size: 12px; line-height: 1.4; }
+.paper-info-bar { display: flex; justify-content: space-between; font-weight: bold; font-size: 12px; margin: 4px 0 6px; }
+.paper-section { margin-top: 6px; }
+.paper-section-title { display: flex; justify-content: space-between; font-weight: bold; font-size: 13px; border-bottom: 1px solid #ccc; padding-bottom: 2px; margin-bottom: 4px; }
+.paper-q-line { display: flex; justify-content: space-between; font-size: 12.5px; padding: 1px 0 1px 12px; }
+.paper-uddipok { font-size: 12.5px; line-height: 1.5; margin: 4px 0; }
+.paper-uddipok img { max-width: 120px; height: auto; display: block; margin: 4px auto; }
+.paper-cq-instr { text-align: center; font-weight: bold; font-size: 12px; text-decoration: underline; margin: 4px 0; }
+.paper-table { border-collapse: collapse; margin: 4px auto; }
+.paper-table td, .paper-table th { border: 1px solid #000; padding: 2px 6px; font-size: 11px; text-align: center; min-width: 30px; }
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: var(--transition);
+  padding: 20px;
+}
+.modal-overlay.open { opacity: 1; pointer-events: auto; }
+.modal-box {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 28px; max-width: 560px; width: 100%;
+  max-height: 80vh; overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  transform: scale(0.9) translateY(20px);
+  transition: var(--transition);
+}
+.modal-overlay.open .modal-box { transform: scale(1) translateY(0); }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.modal-title { font-family: var(--font-display); font-size: 20px; font-weight: 700; }
+.modal-close { width: 32px; height: 32px; border-radius: 50%; background: var(--bg-glass-strong); border: 1px solid var(--border); color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: var(--transition); }
+.modal-close:hover { background: rgba(255,61,154,0.2); color: var(--pink); border-color: rgba(255,61,154,0.3); }
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+#toast-container {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  z-index: 9000; display: flex; flex-direction: column; gap: 8px;
+  align-items: center; pointer-events: none;
+}
+.toast {
+  padding: 12px 20px; border-radius: 30px;
+  font-size: 13px; font-weight: 600;
+  backdrop-filter: blur(20px);
+  display: flex; align-items: center; gap: 10px;
+  animation: toastIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  pointer-events: auto; max-width: 360px;
+  box-shadow: var(--shadow-md);
+}
+.toast.success { background: rgba(0,229,160,0.15); border: 1px solid rgba(0,229,160,0.3); color: var(--emerald); }
+.toast.error { background: rgba(255,61,154,0.15); border: 1px solid rgba(255,61,154,0.3); color: var(--pink); }
+.toast.info { background: rgba(108,63,239,0.15); border: 1px solid rgba(108,63,239,0.3); color: var(--purple-light); }
+.toast.warning { background: rgba(255,215,0,0.15); border: 1px solid rgba(255,215,0,0.3); color: var(--gold); }
+@keyframes toastIn { from{opacity:0;transform:translateY(20px) scale(0.9)} to{opacity:1;transform:translateY(0) scale(1)} }
+@keyframes toastOut { to{opacity:0;transform:translateY(-10px) scale(0.9)} }
+
+/* ============================================================
+   AI PANEL
+   ============================================================ */
+.ai-panel {
+  background: linear-gradient(135deg, rgba(108,63,239,0.1), rgba(0,212,255,0.05));
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-lg); padding: 20px;
+  position: relative; overflow: hidden;
+}
+.ai-panel::before {
+  content: '✦';
+  position: absolute; top: 12px; right: 16px;
+  font-size: 20px; color: var(--purple);
+  animation: spin 4s linear infinite;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+.ai-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  color: var(--purple-light); text-transform: uppercase; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 6px;
+}
+.ai-label::before {
+  content: '';
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--purple-light);
+  animation: blink 1s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+/* ============================================================
+   BLOOM TAXONOMY
+   ============================================================ */
+.bloom-levels { display: flex; gap: 6px; flex-wrap: wrap; }
+.bloom-tag {
+  padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 700;
+  cursor: pointer; transition: var(--transition); border: 1px solid transparent;
+}
+.bloom-tag[data-level="1"] { background: rgba(0,229,160,0.12); color: #00e5a0; }
+.bloom-tag[data-level="2"] { background: rgba(0,212,255,0.12); color: #00d4ff; }
+.bloom-tag[data-level="3"] { background: rgba(108,63,239,0.12); color: #9b6dff; }
+.bloom-tag[data-level="4"] { background: rgba(255,215,0,0.12); color: #ffd700; }
+.bloom-tag[data-level="5"] { background: rgba(255,140,0,0.12); color: #ff8c00; }
+.bloom-tag[data-level="6"] { background: rgba(255,61,154,0.12); color: #ff3d9a; }
+.bloom-tag.active { border-color: currentColor; box-shadow: 0 0 10px currentColor; }
+
+/* ============================================================
+   RECENT FILE CARD
+   ============================================================ */
+.file-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 14px;
+  display: flex; align-items: center; gap: 14px;
+  cursor: pointer; transition: var(--transition);
+}
+.file-card:hover { background: var(--bg-card-hover); border-color: var(--border-accent); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.file-icon {
+  width: 42px; height: 42px; border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;
+}
+.file-name { font-size: 13px; font-weight: 600; }
+.file-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.file-actions { margin-left: auto; display: flex; gap: 6px; }
+
+/* ============================================================
+   DIFFICULTY SLIDER
+   ============================================================ */
+.difficulty-track {
+  height: 6px; background: var(--bg-glass-strong);
+  border-radius: 10px; position: relative; margin: 8px 0;
+}
+.difficulty-fill {
+  height: 100%; border-radius: 10px; background: var(--grad-primary);
+  transition: width 0.3s ease;
+}
+input[type="range"].difficulty-slider {
+  position: absolute; inset: -8px 0;
+  opacity: 0; cursor: pointer; width: 100%;
+}
+
+/* ============================================================
+   SKELETON LOADER
+   ============================================================ */
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-glass) 25%, var(--bg-glass-strong) 50%, var(--bg-glass) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+@keyframes shimmer { 0%{background-position:200%} 100%{background-position:-200%} }
+
+/* ============================================================
+   SETTINGS PANEL
+   ============================================================ */
+.setting-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 0; border-bottom: 1px solid var(--border);
+}
+.setting-item:last-child { border-bottom: none; }
+.setting-info { flex: 1; }
+.setting-name { font-size: 14px; font-weight: 600; }
+.setting-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+/* Toggle Switch */
+.toggle-wrap { display: flex; align-items: center; gap: 8px; }
+.toggle-switch { position: relative; width: 44px; height: 24px; cursor: pointer; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute; inset: 0;
+  background: var(--bg-glass-strong);
+  border: 1px solid var(--border);
+  border-radius: 24px; transition: var(--transition);
+}
+.toggle-slider::before {
+  content: '';
+  position: absolute; left: 3px; top: 50%; transform: translateY(-50%);
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--text-muted); transition: var(--transition);
+}
+.toggle-switch input:checked + .toggle-slider { background: var(--purple); border-color: var(--purple); }
+.toggle-switch input:checked + .toggle-slider::before { left: 23px; background: white; }
+
+/* ============================================================
+   QR CODE
+   ============================================================ */
+#qr-output {
+  display: flex; justify-content: center;
+  background: white; padding: 12px;
+  border-radius: var(--radius-md); margin-top: 14px;
+}
+
+/* ============================================================
+   TABLE BUILDER
+   ============================================================ */
+.table-preview {
+  background: white; border-radius: var(--radius-sm);
+  padding: 10px; overflow-x: auto; margin-top: 10px;
+}
+.table-preview table { border-collapse: collapse; margin: 0 auto; }
+.table-preview td { border: 1px solid #000; padding: 4px 10px; min-width: 50px; text-align: center; font-size: 12px; color: #000; }
+.table-preview td[contenteditable] { outline: none; cursor: text; }
+.table-preview td[contenteditable]:focus { background: #eff6ff; }
+
+/* ============================================================
+   OMR SHEET
+   ============================================================ */
+.omr-row { display: flex; align-items: center; gap: 12px; margin: 6px 0; }
+.omr-num { font-size: 12px; font-weight: 700; width: 20px; text-align: right; color: var(--text-secondary); }
+.omr-bubbles { display: flex; gap: 8px; }
+.omr-bubble {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; cursor: pointer; transition: var(--transition);
+  color: var(--text-muted);
+}
+.omr-bubble.filled { background: var(--text-primary); color: var(--bg-base); border-color: var(--text-primary); }
+
+/* ============================================================
+   PROGRESS BAR
+   ============================================================ */
+.progress-bar-wrap { background: var(--bg-glass); border-radius: 10px; height: 8px; overflow: hidden; }
+.progress-bar-fill {
+  height: 100%; border-radius: 10px; background: var(--grad-primary);
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================================
+   SEARCH / FILTER BAR
+   ============================================================ */
+.filter-bar {
+  display: flex; gap: 10px; align-items: center;
+  padding: 14px; background: var(--bg-glass);
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  margin-bottom: 16px; flex-wrap: wrap;
+}
+
+/* ============================================================
+   EMPTY STATE
+   ============================================================ */
+.empty-state {
+  text-align: center; padding: 60px 24px;
+}
+.empty-icon {
+  font-size: 56px; margin-bottom: 16px;
+  opacity: 0.3; display: block;
+}
+.empty-title { font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--text-secondary); }
+.empty-sub { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
+
+/* ============================================================
+   MARKS DISTRIBUTION VISUAL
+   ============================================================ */
+.marks-block {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 14px;
+  text-align: center;
+}
+.marks-big {
+  font-family: var(--font-display); font-size: 28px; font-weight: 800;
+  background: var(--grad-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.marks-label { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 900px) {
+  #sidebar { transform: translateX(-100%); width: 260px !important; }
+  #sidebar.mobile-open { transform: translateX(0); box-shadow: var(--shadow-lg); }
+  #main-content { margin-left: 0 !important; }
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .paper-page { grid-template-columns: 1fr; width: 100%; }
+  .paper-column:first-child { border-right: none; border-bottom: 2px dashed #ccc; }
+}
+@media (max-width: 600px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .page-view { padding: 16px; }
+  #topbar { padding: 0 14px; }
+  .topbar-search { display: none; }
+  .paper-page { width: 100%; }
+}
+
+/* ============================================================
+   THEME TRANSITION
+   ============================================================ */
+* { transition: background 0.3s, border-color 0.3s, color 0.2s; }
+</style>
 </head>
+
 <body>
 
-<header class="app-header"><h1>Question Maker Pro</h1></header>
-
-<div class="container">
-    <div class="toolbar-box">
-        <div class="input-grid">
-            <input id="school" placeholder="প্রতিষ্ঠানের নাম">
-            <input id="exam" placeholder="পরীক্ষার নাম">
-            <input id="subject" placeholder="বিষয়">
-            <input id="class" placeholder="শ্রেণি">
-            <input id="time" placeholder="সময়">
-            <input id="marks" placeholder="পূর্ণমান">
-        </div>
-
-        <div class="selection-row">
-            <div style="flex:1;">
-                <label style="font-weight:bold;">সংক্ষিপ্ত প্রশ্ন উত্তর দিবে:</label>
-                <input type="number" id="shortCountVal" value="10" style="width:60px; padding:4px;"> টি
-            </div>
-            <div style="flex:1;">
-                <label style="font-weight:bold;">সৃজনশীল উত্তর দিবে:</label>
-                <input type="number" id="cqCountVal" value="2" style="width:60px; padding:4px;"> টি
-            </div>
-        </div>
-        <textarea id="shortQInput" style="height:60px; margin-bottom:15px;" placeholder="সংক্ষিপ্ত প্রশ্ন লিখুন (প্রতি লাইনে একটি করে)"></textarea>
-
-        <div class="tool-panel">
-            <div class="tool-row">
-                <div class="tool-group"><label>ইমেজ যোগ করুন</label><input type="file" id="imgInput" accept="image/*"></div>
-                <div class="tool-group">
-                    <label>টার্গেট উদ্দীপক</label>
-                    <select id="imgTargetSelect"><option value="uddipok1">সৃজনশীল ১</option><option value="uddipok2">সৃজনশীল ২</option></select>
-                </div>
-                <button class="btn" style="background:#8b5cf6; color:white;" onclick="uploadImage()">+ Add Image</button>
-            </div>
-            
-            <div class="tool-row" style="border-top:1px dashed #ccc; padding-top:10px;">
-                <div class="tool-group"><label>সারি</label><input type="number" id="rowNum" value="2" style="width:50px;"></div>
-                <div class="tool-group"><label>কলাম</label><input type="number" id="colNum" value="2" style="width:50px;"></div>
-                <div class="tool-group">
-                    <label>লেআউট</label>
-                    <select id="tableType">
-                        <option value="single">একক টেবিল</option>
-                        <option value="side">পাশাপাশি (টেবিল ক, খ)</option>
-                        <option value="updown">উপর-নিচ (টেবিল ক, খ)</option>
-                    </select>
-                </div>
-                <div class="tool-group">
-                    <label>টার্গেট উদ্দীপক</label>
-                    <select id="tableTargetSelect"><option value="uddipok1">সৃজনশীল ১</option><option value="uddipok2">সৃজনশীল ২</option></select>
-                </div>
-                <button class="btn" style="background:#f59e0b;" onclick="insertTable()">+ Add Table</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="editor-container">
-        <div class="cq-box">
-            <label style="font-weight:bold; color:var(--primary);">সৃজনশীল ১</label>
-            <div id="uddipok1" class="editable-area" contenteditable="true"></div>
-            <div class="input-grid" style="grid-template-columns: 1fr 1fr;">
-                <input id="c1q1" placeholder="ক) প্রশ্ন"> <input id="c1q2" placeholder="খ) প্রশ্ন">
-                <input id="c1q3" placeholder="গ) প্রশ্ন"> <input id="c1q4" placeholder="ঘ) প্রশ্ন">
-            </div>
-        </div>
-        <div class="cq-box">
-            <label style="font-weight:bold; color:var(--primary);">সৃজনশীল ২</label>
-            <div id="uddipok2" class="editable-area" contenteditable="true"></div>
-            <div class="input-grid" style="grid-template-columns: 1fr 1fr;">
-                <input id="c2q1" placeholder="ক) প্রশ্ন"> <input id="c2q2" placeholder="খ) প্রশ্ন">
-                <input id="c2q3" placeholder="গ) প্রশ্ন"> <input id="c2q4" placeholder="ঘ) প্রশ্ন">
-            </div>
-        </div>
-    </div>
-
-    <div style="text-align:center; margin:25px;">
-        <button class="btn btn-preview" onclick="generate()">Preview Question</button>
-        <button class="btn btn-pdf" onclick="downloadPDF()">Download PDF</button>
-    </div>
+<!-- LOADING SCREEN -->
+<div id="loading-screen">
+  <div class="loader-logo">⚡ Question Maker Pro</div>
+  <div style="font-size:13px;color:var(--text-muted);letter-spacing:1px;">ULTIMATE EDITION</div>
+  <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+  <div id="loading-text" style="font-size:12px;color:var(--text-muted);">Initializing...</div>
 </div>
 
-<div id="result-container"></div>
+<!-- APP -->
+<div id="app" style="display:none;">
+
+  <!-- SIDEBAR -->
+  <nav id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">⚡</div>
+      <div class="sidebar-text">
+        <div class="logo-text">QMP Ultimate</div>
+        <div class="logo-sub">Premium Edition v3.0</div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">মূল মেনু</div>
+      <div class="nav-item active" onclick="switchPage('dashboard')">
+        <span class="nav-icon"><i class="fas fa-chart-pie"></i></span>
+        <span>ড্যাশবোর্ড</span>
+      </div>
+      <div class="nav-item" onclick="switchPage('maker')">
+        <span class="nav-icon"><i class="fas fa-pen-nib"></i></span>
+        <span>প্রশ্ন তৈরি</span>
+        <span class="nav-badge">NEW</span>
+      </div>
+      <div class="nav-item" onclick="switchPage('questions')">
+        <span class="nav-icon"><i class="fas fa-list-ul"></i></span>
+        <span>প্রশ্ন ব্যাংক</span>
+      </div>
+      <div class="nav-item" onclick="switchPage('preview')">
+        <span class="nav-icon"><i class="fas fa-eye"></i></span>
+        <span>প্রিভিউ ও প্রিন্ট</span>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">AI সরঞ্জাম</div>
+      <div class="nav-item" onclick="switchPage('ai')">
+        <span class="nav-icon"><i class="fas fa-robot"></i></span>
+        <span>AI জেনারেটর</span>
+        <span class="nav-badge">AI</span>
+      </div>
+      <div class="nav-item" onclick="switchPage('analytics')">
+        <span class="nav-icon"><i class="fas fa-chart-line"></i></span>
+        <span>বিশ্লেষণ</span>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">টুলস</div>
+      <div class="nav-item" onclick="switchPage('templates')">
+        <span class="nav-icon"><i class="fas fa-layer-group"></i></span>
+        <span>টেমপ্লেট</span>
+      </div>
+      <div class="nav-item" onclick="switchPage('omr')">
+        <span class="nav-icon"><i class="fas fa-circle-dot"></i></span>
+        <span>OMR শিট</span>
+      </div>
+      <div class="nav-item" onclick="switchPage('settings')">
+        <span class="nav-icon"><i class="fas fa-gear"></i></span>
+        <span>সেটিংস</span>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="user-avatar">শ</div>
+        <div style="overflow:hidden;">
+          <div class="user-name">শিক্ষক</div>
+          <div class="user-role">Premium Account</div>
+        </div>
+        <i class="fas fa-chevron-right" style="margin-left:auto;font-size:11px;color:var(--text-muted);"></i>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <div id="main-content">
+    <!-- TOPBAR -->
+    <header id="topbar">
+      <button class="topbar-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="topbar-search">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="প্রশ্ন খুঁজুন..." id="globalSearch" oninput="handleSearch(this.value)">
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-btn" onclick="undoAction()" title="Undo"><i class="fas fa-undo"></i></button>
+        <button class="topbar-btn" onclick="redoAction()" title="Redo"><i class="fas fa-redo"></i></button>
+        <button class="topbar-btn" onclick="saveDraft()" title="Save Draft"><i class="fas fa-cloud-upload-alt"></i></button>
+        <button class="topbar-btn" onclick="toggleTheme()" title="Toggle Theme" id="themeBtn">
+          <i class="fas fa-moon"></i>
+        </button>
+        <button class="topbar-btn" title="Notifications" style="position:relative;">
+          <i class="fas fa-bell"></i>
+          <span class="notif-dot"></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ============ DASHBOARD PAGE ============ -->
+    <div class="page-view active" id="page-dashboard">
+      <div class="page-header">
+        <h1 class="page-title">ড্যাশবোর্ড</h1>
+        <p class="page-subtitle">আপনার প্রশ্নপত্র কার্যক্রমের সারসংক্ষেপ</p>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="grid-4" style="margin-bottom:24px;">
+        <div class="glass-card stat-card purple" data-aos="fade-up" data-aos-delay="0">
+          <div class="stat-icon purple"><i class="fas fa-file-alt"></i></div>
+          <div>
+            <div class="stat-value" id="stat-total">0</div>
+            <div class="stat-label">মোট প্রশ্নপত্র</div>
+          </div>
+          <div class="stat-trend"><i class="fas fa-arrow-up"></i> ১২% বৃদ্ধি</div>
+        </div>
+        <div class="glass-card stat-card cyan" data-aos="fade-up" data-aos-delay="80">
+          <div class="stat-icon cyan"><i class="fas fa-question-circle"></i></div>
+          <div>
+            <div class="stat-value" id="stat-questions">0</div>
+            <div class="stat-label">মোট প্রশ্ন</div>
+          </div>
+          <div class="stat-trend"><i class="fas fa-arrow-up"></i> ৮% বৃদ্ধি</div>
+        </div>
+        <div class="glass-card stat-card pink" data-aos="fade-up" data-aos-delay="160">
+          <div class="stat-icon pink"><i class="fas fa-brain"></i></div>
+          <div>
+            <div class="stat-value" id="stat-ai">0</div>
+            <div class="stat-label">AI জেনারেটেড</div>
+          </div>
+          <div class="stat-trend"><i class="fas fa-arrow-up"></i> ২৩% বৃদ্ধি</div>
+        </div>
+        <div class="glass-card stat-card gold" data-aos="fade-up" data-aos-delay="240">
+          <div class="stat-icon gold"><i class="fas fa-star"></i></div>
+          <div>
+            <div class="stat-value" id="stat-fav">0</div>
+            <div class="stat-label">ফেভারিট</div>
+          </div>
+          <div class="stat-trend"><i class="fas fa-arrow-right"></i> স্থিতিশীল</div>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="grid-2" style="margin-bottom:24px;">
+        <div class="glass-card chart-wrap" data-aos="fade-up">
+          <div class="chart-title">প্রশ্নের ধরন বিতরণ</div>
+          <canvas id="typeChart" height="200"></canvas>
+        </div>
+        <div class="glass-card chart-wrap" data-aos="fade-up" data-aos-delay="100">
+          <div class="chart-title">মাসিক কার্যক্রম</div>
+          <canvas id="activityChart" height="200"></canvas>
+        </div>
+      </div>
+
+      <!-- Recent Files + AI Suggestions -->
+      <div class="grid-2">
+        <div data-aos="fade-up">
+          <h2 style="font-family:var(--font-display);font-size:16px;font-weight:700;margin-bottom:14px;">সাম্প্রতিক ফাইল</h2>
+          <div id="recent-files-list">
+            <div class="empty-state" style="padding:30px;">
+              <span class="empty-icon">📂</span>
+              <div class="empty-title">কোনো ফাইল নেই</div>
+              <div class="empty-sub">প্রথম প্রশ্নপত্র তৈরি করুন</div>
+            </div>
+          </div>
+        </div>
+        <div data-aos="fade-up" data-aos-delay="100">
+          <h2 style="font-family:var(--font-display);font-size:16px;font-weight:700;margin-bottom:14px;">AI সুপারিশ</h2>
+          <div class="ai-panel">
+            <div class="ai-label">স্মার্ট সুপারিশ</div>
+            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;">আপনার শিক্ষণ কার্যক্রম বিশ্লেষণ করে AI-এর সুপারিশ:</p>
+            <div style="display:flex;flex-direction:column;gap:8px;" id="ai-suggestions">
+              <div style="background:var(--bg-glass-strong);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;display:flex;align-items:center;gap:10px;">
+                <span style="font-size:18px;">💡</span>
+                <div>সৃজনশীল প্রশ্নে বিশ্লেষণ স্তরের প্রশ্ন বাড়ান</div>
+              </div>
+              <div style="background:var(--bg-glass-strong);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;display:flex;align-items:center;gap:10px;">
+                <span style="font-size:18px;">📊</span>
+                <div>MCQ বিভাগে চিত্র-ভিত্তিক প্রশ্ন যোগ করুন</div>
+              </div>
+              <div style="background:var(--bg-glass-strong);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;display:flex;align-items:center;gap:10px;">
+                <span style="font-size:18px;">🎯</span>
+                <div>ব্লুম ট্যাক্সোনমির সব স্তর অন্তর্ভুক্ত করুন</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ QUESTION MAKER PAGE ============ -->
+    <div class="page-view" id="page-maker">
+      <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:14px;">
+        <div>
+          <h1 class="page-title">প্রশ্নপত্র তৈরি</h1>
+          <p class="page-subtitle">সম্পূর্ণ পেশাদার প্রশ্নপত্র তৈরি করুন</p>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-ghost btn-sm" onclick="clearDraft()"><i class="fas fa-trash"></i> ক্লিয়ার</button>
+          <button class="btn btn-outline btn-sm" onclick="saveDraft()"><i class="fas fa-save"></i> সেভ ড্রাফট</button>
+          <button class="btn btn-primary btn-sm" onclick="switchPage('preview')"><i class="fas fa-eye"></i> প্রিভিউ</button>
+        </div>
+      </div>
+
+      <!-- Exam Info Card -->
+      <div class="glass-card" style="padding:20px;margin-bottom:20px;" data-aos="fade-up">
+        <h3 style="font-size:13px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">পরীক্ষার তথ্য</h3>
+        <div class="input-row">
+          <div class="form-group">
+            <label class="form-label">প্রতিষ্ঠানের নাম</label>
+            <input class="form-control" id="inp-school" placeholder="উদাহরণ: আদর্শ উচ্চ বিদ্যালয়">
+          </div>
+          <div class="form-group">
+            <label class="form-label">পরীক্ষার নাম</label>
+            <input class="form-control" id="inp-exam" placeholder="প্রথম সাময়িক পরীক্ষা ২০২৫">
+          </div>
+          <div class="form-group">
+            <label class="form-label">বিষয়</label>
+            <input class="form-control" id="inp-subject" placeholder="বাংলা / গণিত / বিজ্ঞান">
+          </div>
+          <div class="form-group">
+            <label class="form-label">শ্রেণি</label>
+            <select class="form-control" id="inp-class">
+              <option value="">শ্রেণি নির্বাচন করুন</option>
+              <option>ষষ্ঠ</option><option>সপ্তম</option><option>অষ্টম</option>
+              <option>নবম</option><option>দশম</option><option>একাদশ</option><option>দ্বাদশ</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">সময়</label>
+            <input class="form-control" id="inp-time" placeholder="৩ ঘণ্টা / ১৮০ মিনিট">
+          </div>
+          <div class="form-group">
+            <label class="form-label">পূর্ণমান</label>
+            <input class="form-control" id="inp-marks" type="number" placeholder="১০০">
+          </div>
+        </div>
+        <!-- Logo Upload -->
+        <div style="margin-top:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+          <label class="btn btn-outline btn-sm" style="cursor:pointer;">
+            <i class="fas fa-image"></i> লোগো আপলোড
+            <input type="file" accept="image/*" hidden onchange="uploadLogo(this)">
+          </label>
+          <div id="logo-preview" style="display:none;align-items:center;gap:8px;">
+            <img id="logo-img" style="height:40px;border-radius:6px;border:1px solid var(--border);">
+            <button class="btn btn-ghost btn-sm" onclick="removeLogo()"><i class="fas fa-times"></i></button>
+          </div>
+          <div id="qr-generate-btn">
+            <button class="btn btn-outline btn-sm" onclick="openModal('qrModal')">
+              <i class="fas fa-qrcode"></i> QR যোগ করুন
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs for Question Types -->
+      <div class="tab-bar" id="maker-tabs">
+        <button class="tab-btn active" onclick="switchTab('tab-short','maker-tabs')">📝 সংক্ষিপ্ত প্রশ্ন</button>
+        <button class="tab-btn" onclick="switchTab('tab-cq','maker-tabs')">🧠 সৃজনশীল প্রশ্ন</button>
+        <button class="tab-btn" onclick="switchTab('tab-mcq','maker-tabs')">🔵 MCQ</button>
+        <button class="tab-btn" onclick="switchTab('tab-marks','maker-tabs')">📊 নম্বর বিতরণ</button>
+      </div>
+
+      <!-- SHORT Q TAB -->
+      <div class="tab-content active" id="tab-short" data-aos="fade-up">
+        <div class="glass-card" style="padding:20px;margin-bottom:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+            <h3 style="font-size:15px;font-weight:700;">সংক্ষিপ্ত প্রশ্ন বিভাগ</h3>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              <label class="form-label" style="margin:0;">উত্তর দিবে:</label>
+              <input type="number" class="form-control" id="short-answer-count" value="10" style="width:70px;">
+              <label class="form-label" style="margin:0;">টি | নম্বর প্রতিটিতে:</label>
+              <input type="number" class="form-control" id="short-mark-each" value="1" style="width:60px;">
+            </div>
+          </div>
+          <textarea class="form-control" id="shortQTextarea" style="min-height:140px;" placeholder="প্রতি লাইনে একটি সংক্ষিপ্ত প্রশ্ন লিখুন:&#10;&#10;বাষ্পীভবন কাকে বলে?&#10;কোষ প্রাচীর এর কাজ কী?&#10;..."></textarea>
+          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-ghost btn-sm" onclick="numberShortQ()"><i class="fas fa-list-ol"></i> স্বয়ংক্রিয় নম্বরিং</button>
+            <button class="btn btn-ghost btn-sm" onclick="shuffleShortQ()"><i class="fas fa-random"></i> র‍্যান্ডম সাজান</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CQ TAB -->
+      <div class="tab-content" id="tab-cq" data-aos="fade-up">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+          <h3 style="font-size:15px;font-weight:700;">সৃজনশীল প্রশ্ন বিভাগ</h3>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <label class="form-label" style="margin:0;">উত্তর দিবে:</label>
+            <input type="number" class="form-control" id="cq-answer-count" value="5" style="width:70px;">
+            <button class="btn btn-primary btn-sm" onclick="addCQBlock()"><i class="fas fa-plus"></i> নতুন সৃজনশীল</button>
+          </div>
+        </div>
+        <!-- CQ blocks will be dynamically added here -->
+        <div id="cq-blocks-container">
+          <!-- initial blocks added by JS -->
+        </div>
+        <!-- Image/Table Insertion Tools -->
+        <div class="glass-card" style="padding:16px;margin-top:16px;">
+          <h4 style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px;">মিডিয়া সরঞ্জাম</h4>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;">
+            <!-- Image Tool -->
+            <div style="background:var(--bg-glass-strong);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;">
+              <div style="font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:8px;">📷 ছবি যোগ করুন</div>
+              <label class="btn btn-outline btn-sm" style="cursor:pointer;width:100%;">
+                <i class="fas fa-upload"></i> ছবি নির্বাচন করুন
+                <input type="file" accept="image/*" hidden onchange="insertImageToCQ(this)">
+              </label>
+              <div class="form-group" style="margin-top:8px;">
+                <label class="form-label">লক্ষ্য উদ্দীপক</label>
+                <select class="form-control" id="img-target-cq" style="font-size:12px;padding:6px 10px;"></select>
+              </div>
+            </div>
+            <!-- Table Tool -->
+            <div style="background:var(--bg-glass-strong);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;">
+              <div style="font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:8px;">📊 টেবিল যোগ করুন</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+                <div class="form-group">
+                  <label class="form-label">সারি</label>
+                  <input type="number" class="form-control" id="tbl-rows" value="3" min="1" max="10" style="padding:6px 10px;">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">কলাম</label>
+                  <input type="number" class="form-control" id="tbl-cols" value="3" min="1" max="8" style="padding:6px 10px;">
+                </div>
+              </div>
+              <select class="form-control" id="tbl-layout" style="font-size:12px;padding:6px 10px;margin-bottom:8px;">
+                <option value="single">একক টেবিল</option>
+                <option value="side">পাশাপাশি (ক, খ)</option>
+                <option value="updown">উপর-নিচ (ক, খ)</option>
+              </select>
+              <div class="form-group">
+                <label class="form-label">লক্ষ্য উদ্দীপক</label>
+                <select class="form-control" id="tbl-target-cq" style="font-size:12px;padding:6px 10px;"></select>
+              </div>
+              <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:8px;" onclick="insertTableToCQ()">
+                <i class="fas fa-table"></i> টেবিল যোগ করুন
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MCQ TAB -->
+      <div class="tab-content" id="tab-mcq" data-aos="fade-up">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+          <h3 style="font-size:15px;font-weight:700;">MCQ বিভাগ</h3>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <label class="form-label" style="margin:0;">উত্তর দিবে:</label>
+            <input type="number" class="form-control" id="mcq-answer-count" value="25" style="width:70px;">
+            <label class="form-label" style="margin:0;">নম্বর প্রতিটি:</label>
+            <input type="number" class="form-control" id="mcq-mark-each" value="1" style="width:60px;">
+            <button class="btn btn-primary btn-sm" onclick="addMCQBlock()"><i class="fas fa-plus"></i> নতুন MCQ</button>
+          </div>
+        </div>
+        <div id="mcq-blocks-container"></div>
+      </div>
+
+      <!-- MARKS TAB -->
+      <div class="tab-content" id="tab-marks" data-aos="fade-up">
+        <div class="glass-card" style="padding:20px;">
+          <h3 style="font-size:15px;font-weight:700;margin-bottom:16px;">নম্বর বিতরণ সারাংশ</h3>
+          <div class="grid-4" style="margin-bottom:20px;" id="marks-summary">
+          </div>
+          <div class="progress-bar-wrap" style="margin-bottom:8px;">
+            <div class="progress-bar-fill" id="marks-progress" style="width:0%"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-secondary);">
+            <span>মোট বরাদ্দ নম্বর: <strong id="marks-allocated" style="color:var(--emerald);">0</strong></span>
+            <span>পূর্ণমান: <strong id="marks-total-display" style="color:var(--gold);">100</strong></span>
+          </div>
+          <div style="margin-top:16px;">
+            <canvas id="marksChart" height="200"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ QUESTION BANK PAGE ============ -->
+    <div class="page-view" id="page-questions">
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;">
+        <div>
+          <h1 class="page-title">প্রশ্ন ব্যাংক</h1>
+          <p class="page-subtitle">সংরক্ষিত প্রশ্নসমূহ পরিচালনা করুন</p>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="switchPage('maker')"><i class="fas fa-plus"></i> নতুন তৈরি করুন</button>
+      </div>
+
+      <div class="filter-bar">
+        <div class="topbar-search" style="max-width:280px;flex:1;">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="প্রশ্ন খুঁজুন..." oninput="filterQuestionBank(this.value)">
+        </div>
+        <select class="form-control" style="width:130px;" onchange="filterByType(this.value)">
+          <option value="">সব ধরন</option>
+          <option value="cq">সৃজনশীল</option>
+          <option value="short">সংক্ষিপ্ত</option>
+          <option value="mcq">MCQ</option>
+        </select>
+        <select class="form-control" style="width:130px;" onchange="filterBySubject(this.value)">
+          <option value="">সব বিষয়</option>
+          <option>বাংলা</option><option>ইংরেজি</option><option>গণিত</option>
+          <option>বিজ্ঞান</option><option>পদার্থবিজ্ঞান</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" onclick="toggleFavFilter()"><i class="fas fa-star"></i> ফেভারিট</button>
+      </div>
+
+      <div id="question-bank-list">
+        <div class="empty-state">
+          <span class="empty-icon">📚</span>
+          <div class="empty-title">প্রশ্ন ব্যাংক খালি</div>
+          <div class="empty-sub">প্রশ্নপত্র তৈরি ও সেভ করলে এখানে দেখাবে</div>
+          <button class="btn btn-primary" style="margin-top:16px;" onclick="switchPage('maker')"><i class="fas fa-plus"></i> প্রথম প্রশ্ন তৈরি করুন</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ PREVIEW PAGE ============ -->
+    <div class="page-view" id="page-preview">
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;">
+        <div>
+          <h1 class="page-title">প্রিভিউ ও প্রিন্ট</h1>
+          <p class="page-subtitle">A4 ল্যান্ডস্কেপ ফরম্যাটে প্রিভিউ ও ডাউনলোড করুন</p>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-outline btn-sm" onclick="generatePreview()"><i class="fas fa-sync"></i> আপডেট প্রিভিউ</button>
+          <button class="btn btn-success btn-sm" onclick="downloadPDF()"><i class="fas fa-file-pdf"></i> PDF ডাউনলোড</button>
+          <button class="btn btn-ghost btn-sm" onclick="window.print()"><i class="fas fa-print"></i> প্রিন্ট</button>
+        </div>
+      </div>
+
+      <!-- Watermark Control -->
+      <div class="glass-card" style="padding:16px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+        <div class="toggle-wrap">
+          <span style="font-size:13px;">ওয়াটারমার্ক</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="watermark-toggle" onchange="toggleWatermark(this)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <input class="form-control" id="watermark-text" placeholder="ওয়াটারমার্ক টেক্সট" style="max-width:200px;" value="DRAFT">
+        <div class="toggle-wrap">
+          <span style="font-size:13px;">পেজ নম্বর</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="pagenum-toggle" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="toggle-wrap">
+          <span style="font-size:13px;">সিগনেচার লাইন</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="signature-toggle" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div id="preview-container">
+        <div class="empty-state" style="padding:80px 24px;">
+          <span class="empty-icon">👁️</span>
+          <div class="empty-title">প্রিভিউ প্রস্তুত নয়</div>
+          <div class="empty-sub">প্রশ্ন তৈরি করে "আপডেট প্রিভিউ" বাটনে ক্লিক করুন</div>
+          <button class="btn btn-primary" style="margin-top:16px;" onclick="generatePreview()"><i class="fas fa-eye"></i> প্রিভিউ দেখুন</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ AI PAGE ============ -->
+    <div class="page-view" id="page-ai">
+      <div class="page-header">
+        <h1 class="page-title">AI প্রশ্ন জেনারেটর</h1>
+        <p class="page-subtitle">Anthropic Claude AI দিয়ে স্বয়ংক্রিয় প্রশ্ন তৈরি করুন</p>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:20px;">
+        <!-- AI Config -->
+        <div class="glass-card" style="padding:20px;">
+          <h3 style="font-size:14px;font-weight:700;margin-bottom:16px;color:var(--text-secondary);">AI কনফিগারেশন</h3>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div class="form-group">
+              <label class="form-label">বিষয় / টপিক</label>
+              <input class="form-control" id="ai-topic" placeholder="যেমন: রাসায়নিক বিক্রিয়া, বাষ্পীভবন...">
+            </div>
+            <div class="form-group">
+              <label class="form-label">প্রশ্নের ধরন</label>
+              <select class="form-control" id="ai-type">
+                <option value="cq">সৃজনশীল প্রশ্ন (CQ)</option>
+                <option value="short">সংক্ষিপ্ত প্রশ্ন</option>
+                <option value="mcq">MCQ</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">প্রশ্নের সংখ্যা</label>
+              <input type="number" class="form-control" id="ai-count" value="5" min="1" max="20">
+            </div>
+            <div class="form-group">
+              <label class="form-label">শ্রেণি</label>
+              <select class="form-control" id="ai-class">
+                <option>ষষ্ঠ</option><option>সপ্তম</option><option>অষ্টম</option>
+                <option>নবম</option><option selected>দশম</option><option>একাদশ</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bloom + Difficulty -->
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="ai-panel">
+            <div class="ai-label">ব্লুম'স ট্যাক্সোনমি</div>
+            <div class="bloom-levels">
+              <div class="bloom-tag" data-level="1" onclick="toggleBloom(this)">স্মরণ</div>
+              <div class="bloom-tag" data-level="2" onclick="toggleBloom(this)">বোঝা</div>
+              <div class="bloom-tag active" data-level="3" onclick="toggleBloom(this)">প্রয়োগ</div>
+              <div class="bloom-tag" data-level="4" onclick="toggleBloom(this)">বিশ্লেষণ</div>
+              <div class="bloom-tag" data-level="5" onclick="toggleBloom(this)">মূল্যায়ন</div>
+              <div class="bloom-tag" data-level="6" onclick="toggleBloom(this)">সৃষ্টি</div>
+            </div>
+          </div>
+          <div class="glass-card" style="padding:16px;">
+            <div class="form-label" style="margin-bottom:8px;">কঠিনতার মাত্রা</div>
+            <div class="difficulty-track">
+              <div class="difficulty-fill" id="diff-fill" style="width:50%"></div>
+              <input type="range" class="difficulty-slider" min="1" max="5" value="3" oninput="updateDifficulty(this.value)" id="diff-slider">
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-top:4px;">
+              <span>সহজ</span><span id="diff-label">মধ্যম</span><span>কঠিন</span>
+            </div>
+          </div>
+          <div class="glass-card" style="padding:16px;">
+            <div class="form-label" style="margin-bottom:8px;">অতিরিক্ত নির্দেশনা (ঐচ্ছিক)</div>
+            <textarea class="form-control" id="ai-extra" placeholder="যেমন: পাঠ্যপুস্তক অনুযায়ী, সংজ্ঞামূলক প্রশ্ন বাদ দিন..." style="min-height:80px;"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Generate Button -->
+      <div style="text-align:center;margin:20px 0;">
+        <button class="btn btn-cyber btn-lg" onclick="generateAIQuestions()" id="ai-gen-btn" style="min-width:240px;">
+          <i class="fas fa-magic"></i> AI দিয়ে প্রশ্ন তৈরি করুন
+        </button>
+      </div>
+
+      <!-- AI Output -->
+      <div id="ai-output-area" style="display:none;">
+        <div class="glass-card" style="padding:20px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <h3 style="font-size:15px;font-weight:700;">AI জেনারেটেড প্রশ্ন</h3>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-ghost btn-sm" onclick="copyAIOutput()"><i class="fas fa-copy"></i> কপি</button>
+              <button class="btn btn-primary btn-sm" onclick="addAIToBank()"><i class="fas fa-plus"></i> ব্যাংকে যোগ করুন</button>
+            </div>
+          </div>
+          <div id="ai-result" style="background:var(--bg-glass-strong);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;font-size:14px;line-height:1.8;white-space:pre-wrap;min-height:200px;"></div>
+        </div>
+      </div>
+
+      <!-- Grammar Correction -->
+      <div class="glass-card" style="padding:20px;margin-top:20px;">
+        <h3 style="font-size:14px;font-weight:700;margin-bottom:14px;"><i class="fas fa-spell-check" style="color:var(--cyan);margin-right:8px;"></i>AI ব্যাকরণ সংশোধন</h3>
+        <textarea class="form-control" id="grammar-input" placeholder="প্রশ্নটি এখানে পেস্ট করুন সংশোধনের জন্য..." style="min-height:100px;margin-bottom:12px;"></textarea>
+        <button class="btn btn-outline btn-sm" onclick="correctGrammar()"><i class="fas fa-wand-magic-sparkles"></i> সংশোধন করুন</button>
+        <div id="grammar-output" style="margin-top:12px;display:none;background:var(--bg-glass-strong);border:1px solid rgba(0,229,160,0.3);border-radius:var(--radius-md);padding:14px;font-size:14px;line-height:1.7;"></div>
+      </div>
+    </div>
+
+    <!-- ============ ANALYTICS PAGE ============ -->
+    <div class="page-view" id="page-analytics">
+      <div class="page-header">
+        <h1 class="page-title">বিশ্লেষণ</h1>
+        <p class="page-subtitle">বিস্তারিত পরিসংখ্যান ও প্রবণতা</p>
+      </div>
+      <div class="grid-2" style="margin-bottom:24px;">
+        <div class="glass-card chart-wrap">
+          <div class="chart-title">বিষয়ভিত্তিক প্রশ্ন</div>
+          <canvas id="subjectChart" height="250"></canvas>
+        </div>
+        <div class="glass-card chart-wrap">
+          <div class="chart-title">কঠিনতার বিতরণ</div>
+          <canvas id="diffChart" height="250"></canvas>
+        </div>
+      </div>
+      <div class="glass-card chart-wrap">
+        <div class="chart-title">সাপ্তাহিক তৈরির ইতিহাস</div>
+        <canvas id="weekChart" height="150"></canvas>
+      </div>
+    </div>
+
+    <!-- ============ TEMPLATES PAGE ============ -->
+    <div class="page-view" id="page-templates">
+      <div class="page-header">
+        <h1 class="page-title">পরীক্ষার টেমপ্লেট</h1>
+        <p class="page-subtitle">রেডিমেড টেমপ্লেট দিয়ে দ্রুত শুরু করুন</p>
+      </div>
+      <div class="grid-3" id="templates-grid">
+        <!-- filled by JS -->
+      </div>
+    </div>
+
+    <!-- ============ OMR PAGE ============ -->
+    <div class="page-view" id="page-omr">
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;">
+        <div>
+          <h1 class="page-title">OMR উত্তরপত্র</h1>
+          <p class="page-subtitle">স্বয়ংক্রিয় মূল্যায়নের জন্য OMR শিট তৈরি করুন</p>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-outline btn-sm" onclick="generateOMR()"><i class="fas fa-sync"></i> রিফ্রেশ</button>
+          <button class="btn btn-primary btn-sm" onclick="downloadOMR()"><i class="fas fa-download"></i> ডাউনলোড</button>
+        </div>
+      </div>
+
+      <div class="glass-card" style="padding:20px;margin-bottom:20px;">
+        <div class="input-row">
+          <div class="form-group">
+            <label class="form-label">প্রশ্ন সংখ্যা</label>
+            <input type="number" class="form-control" id="omr-count" value="30" min="10" max="100" onchange="generateOMR()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">বিকল্প সংখ্যা</label>
+            <select class="form-control" id="omr-options" onchange="generateOMR()">
+              <option value="4">৪টি (ক, খ, গ, ঘ)</option>
+              <option value="5">৫টি (ক, খ, গ, ঘ, ঙ)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card" style="padding:20px;background:var(--bg-glass-strong);">
+        <div id="omr-sheet" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:4px;"></div>
+      </div>
+    </div>
+
+    <!-- ============ SETTINGS PAGE ============ -->
+    <div class="page-view" id="page-settings">
+      <div class="page-header">
+        <h1 class="page-title">সেটিংস</h1>
+        <p class="page-subtitle">অ্যাপ কাস্টমাইজেশন ও পছন্দ নির্ধারণ করুন</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="glass-card" style="padding:20px;">
+          <h3 style="font-size:14px;font-weight:700;margin-bottom:16px;color:var(--text-secondary);">থিম ও ডিসপ্লে</h3>
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-name">ডার্ক মোড</div>
+              <div class="setting-desc">গাঢ় রঙের থিম ব্যবহার করুন</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="dark-toggle" checked onchange="setThemeFromToggle(this)">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-name">অ্যানিমেশন</div>
+              <div class="setting-desc">UI অ্যানিমেশন চালু/বন্ধ করুন</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="animation-toggle" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-name">অটো সেভ</div>
+              <div class="setting-desc">প্রতি ৩০ সেকেন্ডে স্বয়ংক্রিয় সেভ</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="autosave-toggle" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="glass-card" style="padding:20px;">
+          <h3 style="font-size:14px;font-weight:700;margin-bottom:16px;color:var(--text-secondary);">ডিফল্ট সেটিং</h3>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label class="form-label">ডিফল্ট পূর্ণমান</label>
+            <input type="number" class="form-control" id="def-marks" value="100" onchange="saveSettings()">
+          </div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label class="form-label">ডিফল্ট সময়</label>
+            <input class="form-control" id="def-time" value="৩ ঘণ্টা" onchange="saveSettings()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">পেপার ওরিয়েন্টেশন</label>
+            <select class="form-control" id="def-orientation" onchange="saveSettings()">
+              <option value="landscape">ল্যান্ডস্কেপ (A4)</option>
+              <option value="portrait">পোর্ট্রেট (A4)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card" style="padding:20px;margin-top:20px;">
+        <h3 style="font-size:14px;font-weight:700;margin-bottom:16px;color:var(--text-secondary);">ডেটা ম্যানেজমেন্ট</h3>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <button class="btn btn-outline btn-sm" onclick="exportData()"><i class="fas fa-download"></i> ডেটা এক্সপোর্ট</button>
+          <button class="btn btn-outline btn-sm" onclick="importData()"><i class="fas fa-upload"></i> ডেটা ইম্পোর্ট</button>
+          <button class="btn btn-danger btn-sm" onclick="clearAllData()"><i class="fas fa-trash"></i> সব মুছুন</button>
+        </div>
+        <div style="margin-top:14px;font-size:12px;color:var(--text-muted);">
+          <i class="fas fa-info-circle" style="margin-right:6px;"></i>
+          সব ডেটা আপনার ব্রাউজারের LocalStorage-এ সংরক্ষিত থাকে।
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end main-content -->
+</div><!-- end app -->
+
+<!-- FAB -->
+<button id="fab" onclick="switchPage('maker')" title="নতুন প্রশ্নপত্র তৈরি করুন">
+  <i class="fas fa-plus"></i>
+</button>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<!-- MOBILE OVERLAY -->
+<div id="mobile-overlay" onclick="closeMobileSidebar()" style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:190;display:none;backdrop-filter:blur(4px);"></div>
+
+<!-- MODALS -->
+<!-- QR Modal -->
+<div class="modal-overlay" id="qrModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">QR কোড যোগ করুন</div>
+      <button class="modal-close" onclick="closeModal('qrModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="form-group" style="margin-bottom:14px;">
+      <label class="form-label">QR কোড কনটেন্ট</label>
+      <input class="form-control" id="qr-input" placeholder="URL বা টেক্সট লিখুন...">
+    </div>
+    <button class="btn btn-primary" onclick="generateQR()"><i class="fas fa-qrcode"></i> QR তৈরি করুন</button>
+    <div id="qr-output" style="margin-top:14px;"></div>
+  </div>
+</div>
+
+<!-- Add Question Modal -->
+<div class="modal-overlay" id="addQModal">
+  <div class="modal-box" style="max-width:680px;">
+    <div class="modal-header">
+      <div class="modal-title">প্রশ্ন সম্পাদনা</div>
+      <button class="modal-close" onclick="closeModal('addQModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div id="modal-q-form"></div>
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px;">
+      <button class="btn btn-ghost" onclick="closeModal('addQModal')">বাতিল</button>
+      <button class="btn btn-primary" onclick="saveModalQuestion()">সংরক্ষণ করুন</button>
+    </div>
+  </div>
+</div>
 
 <script>
-    const toBn = n => n.toString().replace(/\d/g, d => "০১২৩৪৫৬৭৮৯"[d]);
-    const bLetters = ["ক)", "খ)", "গ)", "ঘ)", "ঙ)", "চ)", "ছ)", "জ)", "ঝ)", "ঞ)"];
-    const cqMarks = [1, 2, 3, 4];
+/* ============================================================
+   STATE MANAGEMENT
+   ============================================================ */
+const State = {
+  theme: 'dark',
+  sidebarCollapsed: false,
+  currentPage: 'dashboard',
+  undoStack: [],
+  redoStack: [],
+  cqBlocks: [],
+  mcqBlocks: [],
+  questionBank: [],
+  favorites: [],
+  settings: {},
+  logoData: null,
+  qrData: null,
+  lastSaved: null,
+  autosaveInterval: null,
+};
 
-    function uploadImage() {
-        const file = document.getElementById('imgInput').files[0];
-        const targetId = document.getElementById('imgTargetSelect').value;
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = e => { document.getElementById(targetId).innerHTML += `<div style="text-align:center; margin:5px 0;"><img src="${e.target.result}" class="uddipok-img"></div>`; };
-            reader.readAsDataURL(file);
-        }
+// Bangla digits helper
+const toBn = n => String(n).replace(/\d/g, d => "০১২৩৪৫৬৭৮৯"[d]);
+const bLetters = ["ক)", "খ)", "গ)", "ঘ)", "ঙ)", "চ)", "ছ)", "জ)", "ঝ)", "ঞ)", "ট)", "ঠ)", "ড)", "ঢ)", "ণ)", "ত)", "থ)", "দ)", "ধ)", "ন)"];
+
+/* ============================================================
+   LOADING SCREEN
+   ============================================================ */
+const loadMessages = ["ডেটা লোড হচ্ছে...", "AI ইন্টারফেস প্রস্তুত হচ্ছে...", "UI কম্পোনেন্ট লোড হচ্ছে...", "প্রস্তুত!"];
+let msgIdx = 0;
+const loadInterval = setInterval(() => {
+  const el = document.getElementById('loading-text');
+  if(el && msgIdx < loadMessages.length) { el.textContent = loadMessages[msgIdx++]; }
+  else clearInterval(loadInterval);
+}, 500);
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const ls = document.getElementById('loading-screen');
+    const app = document.getElementById('app');
+    if(ls) { ls.style.opacity = '0'; ls.style.transform = 'scale(1.02)'; ls.style.transition = 'all 0.5s ease'; setTimeout(() => { ls.style.display = 'none'; }, 500); }
+    if(app) { app.style.display = 'flex'; }
+    init();
+  }, 2200);
+});
+
+/* ============================================================
+   INITIALIZATION
+   ============================================================ */
+function init() {
+  loadFromStorage();
+  AOS.init({ duration: 500, once: true, offset: 20 });
+  initCharts();
+  initCQBlocks();
+  initTemplates();
+  generateOMR();
+  updateMarksSummary();
+  setupAutosave();
+  updateStats();
+  renderRecentFiles();
+  updateCQTargetSelects();
+  showToast('অ্যাপ প্রস্তুত! স্বাগতম 🎉', 'success');
+}
+
+/* ============================================================
+   THEME
+   ============================================================ */
+function toggleTheme() {
+  State.theme = State.theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', State.theme);
+  const btn = document.getElementById('themeBtn');
+  const tog = document.getElementById('dark-toggle');
+  if(btn) btn.innerHTML = State.theme === 'dark' ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+  if(tog) tog.checked = State.theme === 'dark';
+  localStorage.setItem('qmp_theme', State.theme);
+  showToast(State.theme === 'dark' ? 'ডার্ক মোড চালু ✨' : 'লাইট মোড চালু ☀️', 'info');
+}
+function setThemeFromToggle(el) {
+  State.theme = el.checked ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', State.theme);
+  const btn = document.getElementById('themeBtn');
+  if(btn) btn.innerHTML = State.theme === 'dark' ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+  localStorage.setItem('qmp_theme', State.theme);
+}
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+function toggleSidebar() {
+  const isMobile = window.innerWidth <= 900;
+  if(isMobile) {
+    const sb = document.getElementById('sidebar');
+    const ov = document.getElementById('mobile-overlay');
+    sb.classList.toggle('mobile-open');
+    ov.style.display = sb.classList.contains('mobile-open') ? 'block' : 'none';
+  } else {
+    State.sidebarCollapsed = !State.sidebarCollapsed;
+    document.getElementById('sidebar').classList.toggle('collapsed');
+    document.getElementById('main-content').classList.toggle('expanded');
+    document.querySelectorAll('.sidebar-text, .sidebar-section-label, .nav-item span:not(.nav-icon), .nav-badge, .user-name, .user-role, .logo-sub')
+      .forEach(el => el.style.display = State.sidebarCollapsed ? 'none' : '');
+  }
+}
+function closeMobileSidebar() {
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  document.getElementById('mobile-overlay').style.display = 'none';
+}
+
+/* ============================================================
+   PAGE NAVIGATION
+   ============================================================ */
+function switchPage(pageId) {
+  document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const page = document.getElementById(`page-${pageId}`);
+  if(page) page.classList.add('active');
+  document.querySelectorAll(`.nav-item[onclick*="${pageId}"]`).forEach(n => n.classList.add('active'));
+  State.currentPage = pageId;
+  window.scrollTo({top:0, behavior:'smooth'});
+  closeMobileSidebar();
+  if(pageId === 'preview') setTimeout(generatePreview, 100);
+  if(pageId === 'analytics') setTimeout(initAnalyticsCharts, 100);
+  if(pageId === 'dashboard') { setTimeout(updateStats,100); setTimeout(renderRecentFiles,100); }
+}
+
+/* ============================================================
+   TABS
+   ============================================================ */
+function switchTab(tabId, barId) {
+  const bar = document.getElementById(barId);
+  const tabIdBase = tabId.split('-').slice(0,2).join('-');
+  document.querySelectorAll(`#${barId} .tab-btn`).forEach((btn,i) => {
+    const tabs = document.querySelectorAll(`[id^="tab-"]`);
+    btn.classList.remove('active');
+  });
+  document.querySelectorAll('.tab-content').forEach(tc => {
+    if(document.getElementById(tabId) && tc.id.startsWith('tab-')) tc.classList.remove('active');
+  });
+  // find all tab contents within same parent
+  const parentEl = document.getElementById(tabId)?.parentElement;
+  if(parentEl) {
+    parentEl.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+  }
+  const targetTab = document.getElementById(tabId);
+  if(targetTab) targetTab.classList.add('active');
+  // activate clicked button
+  if(bar) {
+    const allBtns = bar.querySelectorAll('.tab-btn');
+    allBtns.forEach(btn => {
+      btn.classList.remove('active');
+      if(btn.getAttribute('onclick')?.includes(tabId)) btn.classList.add('active');
+    });
+  }
+  if(tabId === 'tab-marks') setTimeout(updateMarksSummary, 50);
+}
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+function openModal(id) { document.getElementById(id)?.classList.add('open'); }
+function closeModal(id) { document.getElementById(id)?.classList.remove('open'); }
+document.addEventListener('keydown', e => { if(e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open')); });
+
+/* ============================================================
+   TOAST NOTIFICATIONS
+   ============================================================ */
+function showToast(msg, type='info', duration=3000) {
+  const icons = { success:'✅', error:'❌', info:'💡', warning:'⚠️' };
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+  document.getElementById('toast-container').appendChild(toast);
+  setTimeout(() => { toast.style.animation = 'toastOut 0.3s ease forwards'; setTimeout(()=>toast.remove(), 300); }, duration);
+}
+
+/* ============================================================
+   CQ BLOCKS
+   ============================================================ */
+let cqCounter = 0;
+function initCQBlocks() {
+  // Start with 2 default blocks
+  addCQBlock();
+  addCQBlock();
+}
+
+function addCQBlock() {
+  cqCounter++;
+  const id = cqCounter;
+  State.cqBlocks.push({ id, uddipok: '', q1:'', q2:'', q3:'', q4:'' });
+  const container = document.getElementById('cq-blocks-container');
+  const block = document.createElement('div');
+  block.id = `cq-block-${id}`;
+  block.className = 'glass-card';
+  block.style.cssText = 'padding:20px;margin-bottom:16px;';
+  block.setAttribute('data-aos','fade-up');
+  block.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="width:30px;height:30px;background:var(--grad-primary);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;">${toBn(id)}</span>
+        <h3 style="font-size:15px;font-weight:700;">সৃজনশীল প্রশ্ন ${toBn(id)}</h3>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-ghost btn-sm" onclick="duplicateCQBlock(${id})"><i class="fas fa-copy"></i></button>
+        <button class="btn btn-danger btn-sm" onclick="removeCQBlock(${id})"><i class="fas fa-trash"></i></button>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:12px;">
+      <label class="form-label">উদ্দীপক</label>
+      <div id="uddipok-${id}" class="form-control" contenteditable="true" 
+           style="min-height:90px;cursor:text;line-height:1.7;"
+           data-placeholder="উদ্দীপকের টেক্সট লিখুন..."
+           oninput="updateCQData(${id})"
+           onfocus="this.style.borderColor='var(--border-accent)'"
+           onblur="this.style.borderColor='var(--border)'"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="form-group">
+        <label class="form-label">ক) প্রশ্ন (১ নম্বর)</label>
+        <input class="form-control" id="cq${id}q1" placeholder="জ্ঞানমূলক প্রশ্ন..." oninput="updateCQData(${id})">
+      </div>
+      <div class="form-group">
+        <label class="form-label">খ) প্রশ্ন (২ নম্বর)</label>
+        <input class="form-control" id="cq${id}q2" placeholder="অনুধাবনমূলক প্রশ্ন..." oninput="updateCQData(${id})">
+      </div>
+      <div class="form-group">
+        <label class="form-label">গ) প্রশ্ন (৩ নম্বর)</label>
+        <input class="form-control" id="cq${id}q3" placeholder="প্রয়োগমূলক প্রশ্ন..." oninput="updateCQData(${id})">
+      </div>
+      <div class="form-group">
+        <label class="form-label">ঘ) প্রশ্ন (৪ নম্বর)</label>
+        <input class="form-control" id="cq${id}q4" placeholder="উচ্চতর দক্ষতামূলক প্রশ্ন..." oninput="updateCQData(${id})">
+      </div>
+    </div>`;
+  container.appendChild(block);
+  updateCQTargetSelects();
+  // Animate
+  block.style.opacity = '0'; block.style.transform = 'translateY(20px)';
+  setTimeout(()=>{ block.style.transition = 'all 0.4s ease'; block.style.opacity = '1'; block.style.transform = 'translateY(0)'; },50);
+}
+
+function updateCQData(id) {
+  const idx = State.cqBlocks.findIndex(b=>b.id===id);
+  if(idx === -1) return;
+  const el = document.getElementById(`uddipok-${id}`);
+  State.cqBlocks[idx] = {
+    id, uddipok: el ? el.innerHTML : '',
+    q1: document.getElementById(`cq${id}q1`)?.value||'',
+    q2: document.getElementById(`cq${id}q2`)?.value||'',
+    q3: document.getElementById(`cq${id}q3`)?.value||'',
+    q4: document.getElementById(`cq${id}q4`)?.value||'',
+  };
+}
+
+function removeCQBlock(id) {
+  const el = document.getElementById(`cq-block-${id}`);
+  if(el){ el.style.opacity='0'; el.style.transform='scale(0.95)'; el.style.transition='all 0.3s'; setTimeout(()=>{ el.remove(); State.cqBlocks = State.cqBlocks.filter(b=>b.id!==id); updateCQTargetSelects(); },300); }
+  showToast('সৃজনশীল ব্লক মুছে ফেলা হয়েছে', 'info');
+}
+
+function duplicateCQBlock() { addCQBlock(); showToast('সৃজনশীল ব্লক ডুপ্লিকেট করা হয়েছে', 'success'); }
+
+function updateCQTargetSelects() {
+  ['img-target-cq','tbl-target-cq'].forEach(selId => {
+    const sel = document.getElementById(selId);
+    if(!sel) return;
+    sel.innerHTML = '';
+    State.cqBlocks.forEach((b,i) => {
+      const opt = document.createElement('option');
+      opt.value = `uddipok-${b.id}`;
+      opt.text = `সৃজনশীল ${toBn(i+1)}`;
+      sel.appendChild(opt);
+    });
+  });
+}
+
+/* ============================================================
+   MCQ BLOCKS
+   ============================================================ */
+let mcqCounter = 0;
+function addMCQBlock() {
+  mcqCounter++;
+  const id = mcqCounter;
+  const container = document.getElementById('mcq-blocks-container');
+  const block = document.createElement('div');
+  block.id = `mcq-block-${id}`;
+  block.className = 'q-card';
+  block.innerHTML = `
+    <div class="q-card-header">
+      <div class="q-num">${toBn(id)}</div>
+      <span class="q-type-badge mcq">MCQ</span>
+      <span class="q-mark-badge" id="mcq-mark-display-${id}">১ নম্বর</span>
+      <span class="q-drag-handle"><i class="fas fa-grip-vertical"></i></span>
+    </div>
+    <div class="form-group" style="margin-bottom:10px;">
+      <input class="form-control" id="mcq${id}q" placeholder="${toBn(id)}. প্রশ্নটি এখানে লিখুন...">
+    </div>
+    <div class="mcq-options" id="mcq${id}opts">
+      ${['ক','খ','গ','ঘ'].map((l,i)=>`
+        <div class="mcq-option" id="mcq${id}opt${i}" onclick="selectMCQAnswer(${id},${i})">
+          <span class="option-letter">${l}</span>
+          <input class="form-control" id="mcq${id}a${i}" placeholder="${l}) বিকল্পটি লিখুন..." style="border:none;background:none;padding:0;font-size:13px;" onclick="event.stopPropagation()">
+        </div>`).join('')}
+    </div>
+    <div class="q-card-actions">
+      <button class="btn btn-ghost btn-sm" onclick="duplicateMCQ(${id})"><i class="fas fa-copy"></i> কপি</button>
+      <button class="btn btn-danger btn-sm" onclick="removeMCQ(${id})"><i class="fas fa-trash"></i></button>
+    </div>`;
+  container.appendChild(block);
+  block.style.opacity='0'; block.style.transform='translateY(16px)';
+  setTimeout(()=>{ block.style.transition='all 0.3s'; block.style.opacity='1'; block.style.transform='translateY(0)'; },50);
+  
+  // Init Sortable
+  if(container.children.length > 1) {
+    if(!container._sortable) {
+      container._sortable = new Sortable(container, { animation:150, ghostClass:'dragging', handle:'.q-drag-handle' });
     }
+  }
+}
 
-    function generateTableHTML(r, c) {
-        let table = '<table border="1">';
-        for(let i=0; i<r; i++){
-            table += '<tr>';
-            for(let j=0; j<c; j++) table += '<td>...</td>';
-            table += '</tr>';
-        }
-        table += '</table>';
-        return table;
+function selectMCQAnswer(blockId, optIdx) {
+  for(let i=0;i<4;i++) {
+    const opt = document.getElementById(`mcq${blockId}opt${i}`);
+    if(opt) opt.classList.toggle('correct', i===optIdx);
+  }
+}
+function removeMCQ(id) {
+  const el = document.getElementById(`mcq-block-${id}`);
+  if(el){el.style.opacity='0'; el.style.transition='all 0.3s'; setTimeout(()=>el.remove(),300);}
+  showToast('MCQ মুছে ফেলা হয়েছে', 'info');
+}
+function duplicateMCQ(id) { addMCQBlock(); showToast('MCQ ডুপ্লিকেট করা হয়েছে', 'success'); }
+
+/* ============================================================
+   IMAGE UPLOAD
+   ============================================================ */
+function insertImageToCQ(input) {
+  const targetId = document.getElementById('img-target-cq').value;
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const target = document.getElementById(targetId);
+    if(target) {
+      target.innerHTML += `<div style="text-align:center;margin:6px 0;"><img src="${e.target.result}" style="max-width:140px;height:auto;display:inline-block;border-radius:6px;border:1px solid var(--border);" alt="উদ্দীপক ছবি"></div>`;
+      showToast('ছবি সফলভাবে যোগ করা হয়েছে', 'success');
     }
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
 
-    function insertTable() {
-        const r = document.getElementById("rowNum").value;
-        const c = document.getElementById("colNum").value;
-        const type = document.getElementById("tableType").value;
-        const targetId = document.getElementById("tableTargetSelect").value;
-        
-        let finalHtml = "";
-        if(type === 'single') {
-            finalHtml = `<div style="text-align:center; margin:5px 0;">${generateTableHTML(r,c)}</div>`;
-        } else if(type === 'side') {
-            finalHtml = `<div class="side-by-side">
-                            <div style="text-align:center;"><span class="table-label">টেবিল ক</span>${generateTableHTML(r,c)}</div>
-                            <div style="text-align:center;"><span class="table-label">টেবিল খ</span>${generateTableHTML(r,c)}</div>
-                         </div>`;
-        } else if(type === 'updown') {
-            finalHtml = `<div class="up-down">
-                            <div style="text-align:center;"><span class="table-label">টেবিল ক</span>${generateTableHTML(r,c)}</div>
-                            <div style="text-align:center;"><span class="table-label">টেবিল খ</span>${generateTableHTML(r,c)}</div>
-                         </div>`;
-        }
-        document.getElementById(targetId).innerHTML += finalHtml;
+function uploadLogo(input) {
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    State.logoData = e.target.result;
+    document.getElementById('logo-img').src = e.target.result;
+    document.getElementById('logo-preview').style.display = 'flex';
+    showToast('লোগো আপলোড সফল', 'success');
+  };
+  reader.readAsDataURL(file);
+}
+function removeLogo() {
+  State.logoData = null;
+  document.getElementById('logo-preview').style.display = 'none';
+  showToast('লোগো সরানো হয়েছে', 'info');
+}
+
+/* ============================================================
+   TABLE CREATOR
+   ============================================================ */
+function insertTableToCQ() {
+  const rows = parseInt(document.getElementById('tbl-rows').value)||3;
+  const cols = parseInt(document.getElementById('tbl-cols').value)||3;
+  const layout = document.getElementById('tbl-layout').value;
+  const targetId = document.getElementById('tbl-target-cq').value;
+  const target = document.getElementById(targetId);
+  if(!target) { showToast('লক্ষ্য উদ্দীপক নির্বাচন করুন', 'warning'); return; }
+
+  const makeTable = () => {
+    let t = '<table class="paper-table" style="border-collapse:collapse;margin:4px auto;">';
+    for(let i=0;i<rows;i++){
+      t+='<tr>';
+      for(let j=0;j<cols;j++){
+        t+=`<td style="border:1px solid currentColor;padding:3px 8px;min-width:40px;text-align:center;" contenteditable="true">.....</td>`;
+      }
+      t+='</tr>';
     }
+    t+='</table>';
+    return t;
+  };
 
-    function generate() {
-        const school = document.getElementById("school").value || "স্কুলের নাম";
-        const exam = document.getElementById("exam").value || "পরীক্ষার নাম";
-        const subject = document.getElementById("subject").value || "বিষয়";
-        const cls = document.getElementById("class").value || "শ্রেণি";
-        const time = document.getElementById("time").value || "";
-        const marks = document.getElementById("marks").value || "০";
+  let html = '';
+  if(layout==='single') {
+    html = `<div style="text-align:center;margin:6px 0;">${makeTable()}</div>`;
+  } else if(layout==='side') {
+    html = `<div style="display:flex;justify-content:center;gap:20px;margin:6px 0;flex-wrap:wrap;">
+      <div style="text-align:center;"><div style="font-size:12px;font-weight:bold;margin-bottom:4px;">টেবিল ক</div>${makeTable()}</div>
+      <div style="text-align:center;"><div style="font-size:12px;font-weight:bold;margin-bottom:4px;">টেবিল খ</div>${makeTable()}</div>
+    </div>`;
+  } else {
+    html = `<div style="text-align:center;margin:6px 0;">
+      <div style="margin-bottom:8px;"><div style="font-size:12px;font-weight:bold;margin-bottom:4px;">টেবিল ক</div>${makeTable()}</div>
+      <div><div style="font-size:12px;font-weight:bold;margin-bottom:4px;">টেবিল খ</div>${makeTable()}</div>
+    </div>`;
+  }
+  target.innerHTML += html;
+  showToast('টেবিল যোগ করা হয়েছে', 'success');
+}
 
-        const shortCount = document.getElementById("shortCountVal").value;
-        const shortQs = document.getElementById("shortQInput").value.split('\n').filter(q => q.trim());
-        let shortHtml = "";
-        if(shortQs.length > 0) {
-            shortHtml = `<div class="section-title"><span>১। সংক্ষিপ্ত প্রশ্নের উত্তর দাও (যেকোনো ${toBn(shortCount)}টি):</span><span>২ × ${toBn(shortCount)} = ${toBn(shortCount * 2)}</span></div>`;
-            // সংক্ষিপ্ত প্রশ্নের নম্বর '২' বাদ দেওয়া হয়েছে
-            shortQs.forEach((q, i) => { shortHtml += `<div class="q-line"><span>${bLetters[i] || (i+1)} ${q}</span></div>`; });
-        }
+/* ============================================================
+   QR CODE
+   ============================================================ */
+function generateQR() {
+  const text = document.getElementById('qr-input').value;
+  if(!text) { showToast('QR কনটেন্ট লিখুন', 'warning'); return; }
+  const output = document.getElementById('qr-output');
+  output.innerHTML = '';
+  try {
+    new QRCode(output, { text, width:140, height:140, colorDark:'#1a0a3e', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.H });
+    State.qrData = text;
+    showToast('QR কোড তৈরি হয়েছে', 'success');
+  } catch(e) { output.innerHTML = '<p style="color:var(--pink);font-size:13px;">QR কোড তৈরিতে সমস্যা হয়েছে</p>'; }
+}
 
-        const getCQ = (id, prefix, num) => {
-            const content = document.getElementById(id).innerHTML;
-            const qs = [1,2,3,4].map(i => document.getElementById(`${prefix}q${i}`).value);
-            if(!content.trim() && !qs[0]) return "";
-            return `<div class="section-title"><span>${toBn(num)}। উদ্দীপকটি লক্ষ করো এবং উত্তর দাও:</span><span>১০</span></div>
-                    <div class="uddipok-text">${content}</div>
-                    ${qs.map((q, i) => q ? `<div class="q-line"><span>${bLetters[i]} ${q}</span><span class="q-mark">${toBn(cqMarks[i])}</span></div>` : '').join('')}`;
-        };
+/* ============================================================
+   MARKS SUMMARY
+   ============================================================ */
+function updateMarksSummary() {
+  const shortCount = parseInt(document.getElementById('short-answer-count')?.value)||0;
+  const shortMark = parseInt(document.getElementById('short-mark-each')?.value)||1;
+  const shortTotal = shortCount * shortMark;
 
-        const cq1 = getCQ('uddipok1', 'c1', 2), cq2 = getCQ('uddipok2', 'c2', 3);
-        const cqInstr = (cq1 || cq2) ? `<div class="cq-instruction">যেকোনো ${toBn(document.getElementById("cqCountVal").value)}টি সৃজনশীল প্রশ্নের উত্তর দাও</div>` : "";
+  const cqAnswerCount = parseInt(document.getElementById('cq-answer-count')?.value)||0;
+  const cqTotal = cqAnswerCount * 10;
 
-        const fullContent = `
-            <div class="header">
-                <h3>${school}</h3>
-                <div style="font-weight:bold;">${exam}</div>
-                <div>বিষয়: ${subject} | শ্রেণি: ${cls}</div>
-            </div>
-            <div class="info-bar"><span>সময়: ${time}</span><span>পূর্ণমান: ${toBn(marks)}</span></div>
-            ${shortHtml}${cqInstr}${cq1}${cq2}`;
+  const mcqAnswerCount = parseInt(document.getElementById('mcq-answer-count')?.value)||0;
+  const mcqMark = parseInt(document.getElementById('mcq-mark-each')?.value)||1;
+  const mcqTotal = mcqAnswerCount * mcqMark;
 
-        document.getElementById("result-container").innerHTML = `<div class="page" id="printable"><div class="column">${fullContent}</div><div class="cut-mark"></div><div class="column">${fullContent}</div></div>`;
-        window.scrollTo({ top: document.getElementById("result-container").offsetTop, behavior: 'smooth' });
+  const allocated = shortTotal + cqTotal + mcqTotal;
+  const totalMarks = parseInt(document.getElementById('inp-marks')?.value)||100;
+  const pct = Math.min(100, Math.round(allocated/totalMarks*100));
+
+  const summaryEl = document.getElementById('marks-summary');
+  if(summaryEl) summaryEl.innerHTML = `
+    <div class="marks-block"><div class="marks-big">${toBn(shortTotal)}</div><div class="marks-label">সংক্ষিপ্ত (${toBn(shortCount)}×${toBn(shortMark)})</div></div>
+    <div class="marks-block"><div class="marks-big">${toBn(cqTotal)}</div><div class="marks-label">সৃজনশীল (${toBn(cqAnswerCount)}×১০)</div></div>
+    <div class="marks-block"><div class="marks-big">${toBn(mcqTotal)}</div><div class="marks-label">MCQ (${toBn(mcqAnswerCount)}×${toBn(mcqMark)})</div></div>
+    <div class="marks-block" style="background:linear-gradient(135deg,rgba(108,63,239,0.15),rgba(0,212,255,0.08));border-color:var(--border-accent);">
+      <div class="marks-big">${toBn(allocated)}</div><div class="marks-label">মোট বরাদ্দ</div>
+    </div>`;
+  
+  const progEl = document.getElementById('marks-progress');
+  if(progEl) progEl.style.width = pct+'%';
+  const allocEl = document.getElementById('marks-allocated');
+  if(allocEl) allocEl.textContent = toBn(allocated);
+  const totalDispEl = document.getElementById('marks-total-display');
+  if(totalDispEl) totalDispEl.textContent = toBn(totalMarks);
+}
+
+/* ============================================================
+   SHORT Q FUNCTIONS
+   ============================================================ */
+function numberShortQ() {
+  const ta = document.getElementById('shortQTextarea');
+  const lines = ta.value.split('\n').filter(l=>l.trim());
+  ta.value = lines.map((l,i) => `${i+1}. ${l.replace(/^\d+[\.\)]\s*/,'')}`).join('\n');
+  showToast('স্বয়ংক্রিয় নম্বরিং সম্পন্ন', 'success');
+}
+function shuffleShortQ() {
+  const ta = document.getElementById('shortQTextarea');
+  const lines = ta.value.split('\n').filter(l=>l.trim());
+  for(let i=lines.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [lines[i],lines[j]]=[lines[j],lines[i]]; }
+  ta.value = lines.join('\n');
+  showToast('প্রশ্ন র‍্যান্ডমলি সাজানো হয়েছে', 'success');
+}
+function handleSearch(val) {
+  // visual feedback
+  if(val.length > 0) showToast(`"${val}" খোঁজা হচ্ছে...`, 'info', 1000);
+}
+
+/* ============================================================
+   PREVIEW GENERATION
+   ============================================================ */
+function generatePreview() {
+  // Gather all CQ data
+  State.cqBlocks.forEach(b => {
+    const el = document.getElementById(`uddipok-${b.id}`);
+    if(el) b.uddipok = el.innerHTML;
+    ['q1','q2','q3','q4'].forEach(q => {
+      const inp = document.getElementById(`cq${b.id}${q}`);
+      if(inp) b[q] = inp.value;
+    });
+  });
+
+  const school = document.getElementById('inp-school')?.value || 'প্রতিষ্ঠানের নাম';
+  const exam   = document.getElementById('inp-exam')?.value   || 'পরীক্ষার নাম';
+  const sub    = document.getElementById('inp-subject')?.value|| 'বিষয়';
+  const cls    = document.getElementById('inp-class')?.value  || 'শ্রেণি';
+  const time   = document.getElementById('inp-time')?.value   || '৩ ঘণ্টা';
+  const marks  = document.getElementById('inp-marks')?.value  || '১০০';
+  const shortCount = document.getElementById('short-answer-count')?.value || '10';
+  const shortMark  = document.getElementById('short-mark-each')?.value    || '1';
+  const cqAnswerCount  = document.getElementById('cq-answer-count')?.value  || '5';
+  const mcqAnswerCount = document.getElementById('mcq-answer-count')?.value || '25';
+  const mcqMarkEach    = document.getElementById('mcq-mark-each')?.value    || '1';
+  
+  const shortQs = (document.getElementById('shortQTextarea')?.value||'').split('\n').filter(q=>q.trim());
+  const wm = document.getElementById('watermark-toggle')?.checked;
+  const wmText = document.getElementById('watermark-text')?.value || 'DRAFT';
+  const showSig = document.getElementById('signature-toggle')?.checked;
+  const showPageNum = document.getElementById('pagenum-toggle')?.checked;
+  const logoImg = State.logoData ? `<img src="${State.logoData}" style="height:50px;display:block;margin:0 auto 4px;" alt="লোগো">` : '';
+
+  const shortTotal = parseInt(shortCount) * parseInt(shortMark);
+  const cqTotal = parseInt(cqAnswerCount) * 10;
+  const mcqTotal = parseInt(mcqAnswerCount) * parseInt(mcqMarkEach);
+
+  // Short Q HTML
+  let shortHtml = '';
+  if(shortQs.length > 0) {
+    shortHtml += `<div class="paper-section">
+      <div class="paper-section-title">
+        <span>১। সংক্ষিপ্ত প্রশ্নের উত্তর দাও (যেকোনো ${toBn(shortCount)}টি)</span>
+        <span>${toBn(shortMark)} × ${toBn(shortCount)} = ${toBn(shortTotal)}</span>
+      </div>`;
+    shortQs.forEach((q,i) => {
+      shortHtml += `<div class="paper-q-line"><span>${bLetters[i]||`${i+1}.`} ${q.replace(/^\d+[\.\)]\s*/,'')}</span></div>`;
+    });
+    shortHtml += '</div>';
+  }
+
+  // MCQ HTML
+  let mcqHtml = '';
+  const mcqBlocks = document.querySelectorAll('[id^="mcq-block-"]');
+  if(mcqBlocks.length > 0) {
+    mcqHtml += `<div class="paper-section">
+      <div class="paper-section-title">
+        <span>২। বহুনির্বাচনী প্রশ্ন (যেকোনো ${toBn(mcqAnswerCount)}টি)</span>
+        <span>${toBn(mcqMarkEach)} × ${toBn(mcqAnswerCount)} = ${toBn(mcqTotal)}</span>
+      </div>`;
+    mcqBlocks.forEach((blk, idx) => {
+      const id = blk.id.replace('mcq-block-','');
+      const qEl = document.getElementById(`mcq${id}q`);
+      const q = qEl?.value || `প্রশ্ন ${toBn(idx+1)}`;
+      mcqHtml += `<div style="font-size:12.5px;margin:2px 0;">${toBn(idx+1)}. ${q}</div>`;
+      const opts = ['ক','খ','গ','ঘ'];
+      let optsStr = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;padding-left:14px;">';
+      opts.forEach((l,i) => {
+        const aEl = document.getElementById(`mcq${id}a${i}`);
+        const a = aEl?.value || `বিকল্প ${l}`;
+        optsStr += `<div style="font-size:11.5px;">${l}) ${a}</div>`;
+      });
+      optsStr += '</div>';
+      mcqHtml += optsStr;
+    });
+    mcqHtml += '</div>';
+  }
+
+  // CQ HTML
+  let cqHtml = '';
+  const activeCQs = State.cqBlocks.filter(b => b.uddipok || b.q1 || b.q2);
+  if(activeCQs.length > 0) {
+    const secNum = (shortQs.length > 0 ? 1 : 0) + (mcqBlocks.length > 0 ? 1 : 0) + 1;
+    cqHtml += `<div class="paper-section">
+      <div class="paper-cq-instr">যেকোনো ${toBn(cqAnswerCount)}টি সৃজনশীল প্রশ্নের উত্তর দাও</div>`;
+    activeCQs.forEach((b,i) => {
+      const qNum = (shortQs.length>0?1:0)+(mcqBlocks.length>0?1:0)+1;
+      cqHtml += `<div class="paper-section-title">
+        <span>${toBn(qNum+i)}। উদ্দীপকটি পড় এবং প্রশ্নগুলোর উত্তর দাও:</span>
+        <span>১০</span>
+      </div>
+      <div class="paper-uddipok">${b.uddipok || '...'}</div>`;
+      const qs = [b.q1, b.q2, b.q3, b.q4];
+      const marks_arr = [1,2,3,4];
+      qs.forEach((q,qi) => {
+        if(q) cqHtml += `<div class="paper-q-line"><span>${bLetters[qi]} ${q}</span><span>${toBn(marks_arr[qi])}</span></div>`;
+      });
+    });
+    cqHtml += '</div>';
+  }
+
+  // Signature
+  const sigHtml = showSig ? `<div style="margin-top:12px;padding-top:8px;border-top:1px dashed #999;display:flex;justify-content:space-between;font-size:11px;">
+    <div style="text-align:center;"><div style="border-top:1px solid #000;width:80px;margin-bottom:2px;"></div>পরীক্ষকের স্বাক্ষর</div>
+    <div style="text-align:center;"><div style="border-top:1px solid #000;width:80px;margin-bottom:2px;"></div>প্রধান শিক্ষকের স্বাক্ষর</div>
+  </div>` : '';
+
+  const pageNumHtml = showPageNum ? `<div style="text-align:center;font-size:10px;margin-top:6px;color:#666;">— ১ —</div>` : '';
+  const wmHtml = wm ? `<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-45deg);font-size:60px;color:rgba(0,0,0,0.06);font-weight:900;pointer-events:none;white-space:nowrap;z-index:1;font-family:sans-serif;">${wmText}</div>` : '';
+
+  const colContent = `
+    <div class="paper-header">
+      ${logoImg}
+      <h3>${school}</h3>
+      <div class="exam-info" style="font-weight:bold;">${exam}</div>
+      <div class="exam-info">বিষয়: ${sub} | শ্রেণি: ${cls}</div>
+    </div>
+    <div class="paper-info-bar">
+      <span>সময়: ${time}</span>
+      <span>পূর্ণমান: ${toBn(marks)}</span>
+    </div>
+    ${shortHtml}${mcqHtml}${cqHtml}
+    ${sigHtml}${pageNumHtml}`;
+
+  const previewHtml = `<div class="paper-page" id="printable" style="font-family:'Hind Siliguri',sans-serif;">
+    ${wmHtml}
+    <div class="paper-column">${colContent}</div>
+    <div class="paper-column">${colContent}</div>
+  </div>`;
+
+  document.getElementById('preview-container').innerHTML = previewHtml;
+  showToast('প্রিভিউ আপডেট হয়েছে ✨', 'success');
+  window.scrollTo({ top: document.getElementById('preview-container').offsetTop - 80, behavior:'smooth' });
+}
+
+/* ============================================================
+   PDF DOWNLOAD
+   ============================================================ */
+function downloadPDF() {
+  const element = document.getElementById('printable');
+  if(!element) { generatePreview(); setTimeout(downloadPDF, 500); return; }
+  showToast('PDF তৈরি হচ্ছে... অপেক্ষা করুন ⏳', 'info', 4000);
+  html2pdf().set({
+    margin: 0,
+    filename: `প্রশ্নপত্র_${new Date().getTime()}.pdf`,
+    html2canvas: { scale: 3, useCORS: true, letterRendering: true },
+    jsPDF: { unit:'mm', format:'a4', orientation:'landscape' }
+  }).from(element).save().then(()=>showToast('PDF ডাউনলোড সফল! 🎉', 'success'));
+}
+
+/* ============================================================
+   AI FEATURES (Powered by Claude API)
+   ============================================================ */
+async function generateAIQuestions() {
+  const topic   = document.getElementById('ai-topic')?.value;
+  const type    = document.getElementById('ai-type')?.value || 'cq';
+  const count   = document.getElementById('ai-count')?.value || '5';
+  const cls     = document.getElementById('ai-class')?.value || 'দশম';
+  const diff    = document.getElementById('diff-slider')?.value || '3';
+  const extra   = document.getElementById('ai-extra')?.value || '';
+  const blooms  = [...document.querySelectorAll('.bloom-tag.active')].map(t=>t.textContent).join(', ');
+
+  if(!topic) { showToast('টপিক লিখুন', 'warning'); return; }
+
+  const typeNames = { cq:'সৃজনশীল প্রশ্ন (উদ্দীপকসহ ক, খ, গ, ঘ বিভাগে)', short:'সংক্ষিপ্ত প্রশ্ন', mcq:'MCQ (৪টি বিকল্পসহ, সঠিক উত্তর চিহ্নিত করে)' };
+  const diffNames = ['','সহজ','সহজ-মাঝারি','মাঝারি','মাঝারি-কঠিন','কঠিন'];
+  
+  const prompt = `তুমি একজন বাংলা ভাষার অভিজ্ঞ শিক্ষক। নিচের নির্দেশনা অনুযায়ী প্রশ্ন তৈরি করো:
+
+বিষয়/টপিক: ${topic}
+শ্রেণি: ${cls}
+প্রশ্নের ধরন: ${typeNames[type]}
+প্রশ্নের সংখ্যা: ${count}টি
+কঠিনতার মাত্রা: ${diffNames[diff]||'মাঝারি'}
+ব্লুম'স ট্যাক্সোনমি স্তর: ${blooms||'প্রয়োগ'}
+${extra ? `অতিরিক্ত নির্দেশনা: ${extra}` : ''}
+
+প্রশ্নগুলো বাংলা ভাষায় লিখো। পাঠ্যপুস্তকের স্তর অনুযায়ী লেখো।`;
+
+  const btn = document.getElementById('ai-gen-btn');
+  if(btn){ btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> প্রশ্ন তৈরি হচ্ছে...'; btn.disabled = true; }
+
+  const outputArea = document.getElementById('ai-output-area');
+  const resultEl = document.getElementById('ai-result');
+  outputArea.style.display = 'block';
+  resultEl.textContent = '⏳ AI প্রশ্ন তৈরি করছে...';
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role:'user', content: prompt }]
+      })
+    });
+    const data = await resp.json();
+    const text = data.content?.map(c=>c.text||'').join('\n') || 'কোনো সাড়া পাওয়া যায়নি।';
+    resultEl.textContent = text;
+    State.stats = State.stats || {};
+    State.stats.aiGenerated = (State.stats.aiGenerated||0) + 1;
+    saveToStorage();
+    showToast(`${count}টি প্রশ্ন সফলভাবে তৈরি হয়েছে! 🎉`, 'success');
+  } catch(err) {
+    resultEl.innerHTML = `<span style="color:var(--pink);">⚠️ নেটওয়ার্ক সমস্যা অথবা API সীমা পূর্ণ।\n\nডেমো হিসেবে নমুনা প্রশ্ন:\n\n১। ${topic} কাকে বলে? সংক্ষেপে লেখো।\n২। ${topic}-এর গুরুত্ব ব্যাখ্যা করো।\n৩। ${topic} সম্পর্কিত একটি উদ্দীপক তৈরি করো এবং বিশ্লেষণ করো।</span>`;
+  } finally {
+    if(btn){ btn.innerHTML = '<i class="fas fa-magic"></i> AI দিয়ে প্রশ্ন তৈরি করুন'; btn.disabled = false; }
+  }
+}
+
+async function correctGrammar() {
+  const text = document.getElementById('grammar-input')?.value;
+  if(!text) { showToast('প্রশ্ন পেস্ট করুন', 'warning'); return; }
+  const outputEl = document.getElementById('grammar-output');
+  outputEl.style.display = 'block';
+  outputEl.textContent = '⏳ সংশোধন করা হচ্ছে...';
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514', max_tokens: 1000,
+        messages: [{ role:'user', content: `নিচের বাংলা টেক্সটটি ব্যাকরণগতভাবে সংশোধন করো এবং শুধু সংশোধিত টেক্সট দাও:\n\n${text}` }]
+      })
+    });
+    const data = await resp.json();
+    const corrected = data.content?.map(c=>c.text||'').join('') || text;
+    outputEl.innerHTML = `<div style="color:var(--emerald);font-weight:600;margin-bottom:6px;font-size:12px;">✅ সংশোধিত টেক্সট:</div>${corrected}`;
+    showToast('ব্যাকরণ সংশোধন সম্পন্ন', 'success');
+  } catch(e) {
+    outputEl.innerHTML = `<span style="color:var(--pink);">সংযোগ সমস্যা। পরে আবার চেষ্টা করুন।</span>`;
+  }
+}
+
+function copyAIOutput() {
+  const text = document.getElementById('ai-result')?.textContent;
+  if(text) { navigator.clipboard.writeText(text).then(()=>showToast('কপি সম্পন্ন!','success')); }
+}
+function addAIToBank() {
+  const text = document.getElementById('ai-result')?.textContent;
+  if(!text||text.includes('⏳')) { showToast('প্রথমে প্রশ্ন তৈরি করুন','warning'); return; }
+  State.questionBank.push({ id: Date.now(), type:'ai', content: text, created: new Date().toLocaleDateString('bn-BD'), fav:false });
+  saveToStorage();
+  updateStats();
+  showToast('প্রশ্ন ব্যাংকে সংরক্ষিত হয়েছে ✅','success');
+}
+
+/* ============================================================
+   BLOOM TAXONOMY
+   ============================================================ */
+function toggleBloom(el) { el.classList.toggle('active'); }
+
+/* ============================================================
+   DIFFICULTY SLIDER
+   ============================================================ */
+function updateDifficulty(val) {
+  const fill = document.getElementById('diff-fill');
+  const label = document.getElementById('diff-label');
+  if(fill) fill.style.width = (val/5*100)+'%';
+  const labels = ['','সহজ','সহজ-মাঝারি','মাঝারি','মাঝারি-কঠিন','কঠিন'];
+  if(label) label.textContent = labels[val]||'মাঝারি';
+}
+
+/* ============================================================
+   CHARTS
+   ============================================================ */
+const chartDefaults = {
+  plugins: { legend: { labels: { color: 'rgba(240,236,255,0.7)', font:{size:11} } } },
+  scales: {
+    x: { ticks:{color:'rgba(240,236,255,0.5)',font:{size:10}}, grid:{color:'rgba(255,255,255,0.05)'} },
+    y: { ticks:{color:'rgba(240,236,255,0.5)',font:{size:10}}, grid:{color:'rgba(255,255,255,0.05)'} }
+  }
+};
+
+let typeChartInst, activityChartInst, marksChartInst;
+
+function initCharts() {
+  // Type donut chart
+  const tc = document.getElementById('typeChart');
+  if(tc) {
+    typeChartInst = new Chart(tc, {
+      type:'doughnut',
+      data:{
+        labels:['সৃজনশীল','সংক্ষিপ্ত','MCQ'],
+        datasets:[{data:[40,30,30], backgroundColor:['rgba(108,63,239,0.8)','rgba(0,212,255,0.8)','rgba(255,61,154,0.8)'], borderColor:'rgba(0,0,0,0.3)', borderWidth:2}]
+      },
+      options:{ plugins:{ legend:{labels:{color:'rgba(240,236,255,0.7)',font:{size:11}}} }, cutout:'65%', responsive:true }
+    });
+  }
+  // Activity line chart
+  const ac = document.getElementById('activityChart');
+  if(ac) {
+    activityChartInst = new Chart(ac, {
+      type:'line',
+      data:{
+        labels:['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন'],
+        datasets:[{label:'প্রশ্নপত্র',data:[5,8,3,12,7,15], borderColor:'rgba(108,63,239,1)', backgroundColor:'rgba(108,63,239,0.1)', tension:0.4, fill:true, pointBackgroundColor:'rgba(108,63,239,1)'}]
+      },
+      options:{ responsive:true, ...chartDefaults }
+    });
+  }
+  // Marks chart
+  const mc = document.getElementById('marksChart');
+  if(mc) {
+    marksChartInst = new Chart(mc, {
+      type:'bar',
+      data:{
+        labels:['সংক্ষিপ্ত','MCQ','সৃজনশীল'],
+        datasets:[{label:'নম্বর', data:[20,25,50], backgroundColor:['rgba(0,212,255,0.7)','rgba(255,61,154,0.7)','rgba(108,63,239,0.7)'], borderRadius:6}]
+      },
+      options:{ responsive:true, ...chartDefaults }
+    });
+  }
+}
+
+function initAnalyticsCharts() {
+  // Subject chart
+  const sc = document.getElementById('subjectChart');
+  if(sc && !sc._chartInst) {
+    sc._chartInst = new Chart(sc, {
+      type:'bar', 
+      data:{
+        labels:['বাংলা','ইংরেজি','গণিত','বিজ্ঞান','সামাজিক'],
+        datasets:[{label:'প্রশ্ন সংখ্যা', data:[24,18,32,28,14], backgroundColor:'rgba(108,63,239,0.7)', borderRadius:6}]
+      },
+      options:{ responsive:true, ...chartDefaults }
+    });
+  }
+  // Difficulty chart
+  const dc = document.getElementById('diffChart');
+  if(dc && !dc._chartInst) {
+    dc._chartInst = new Chart(dc, {
+      type:'polarArea',
+      data:{
+        labels:['সহজ','মাঝারি-সহজ','মাঝারি','মাঝারি-কঠিন','কঠিন'],
+        datasets:[{data:[20,25,30,15,10], backgroundColor:['rgba(0,229,160,0.6)','rgba(0,212,255,0.6)','rgba(108,63,239,0.6)','rgba(255,215,0,0.6)','rgba(255,61,154,0.6)']}]
+      },
+      options:{ responsive:true, plugins:{legend:{labels:{color:'rgba(240,236,255,0.7)',font:{size:10}}}} }
+    });
+  }
+  // Week chart
+  const wc = document.getElementById('weekChart');
+  if(wc && !wc._chartInst) {
+    wc._chartInst = new Chart(wc, {
+      type:'line',
+      data:{
+        labels:['রবি','সোম','মঙ্গল','বুধ','বৃহস্পতি','শুক্র','শনি'],
+        datasets:[
+          {label:'সৃজনশীল',data:[3,5,2,8,4,6,3],borderColor:'rgba(108,63,239,1)',tension:0.4,fill:false},
+          {label:'MCQ',data:[8,12,6,15,9,11,7],borderColor:'rgba(0,212,255,1)',tension:0.4,fill:false},
+          {label:'সংক্ষিপ্ত',data:[5,8,4,10,6,9,5],borderColor:'rgba(255,61,154,1)',tension:0.4,fill:false}
+        ]
+      },
+      options:{ responsive:true, ...chartDefaults }
+    });
+  }
+}
+
+/* ============================================================
+   TEMPLATES
+   ============================================================ */
+const templates = [
+  { name:'JSC বাংলা',    icon:'📚', color:'purple', subject:'বাংলা',    class:'অষ্টম',  marks:100, time:'৩ ঘণ্টা' },
+  { name:'SSC বিজ্ঞান',  icon:'🔬', color:'cyan',   subject:'বিজ্ঞান',  class:'দশম',    marks:100, time:'৩ ঘণ্টা' },
+  { name:'HSC পদার্থ',   icon:'⚛️', color:'pink',   subject:'পদার্থ',   class:'দ্বাদশ', marks:100, time:'৩ ঘণ্টা' },
+  { name:'SSC গণিত',     icon:'📐', color:'gold',   subject:'গণিত',    class:'দশম',    marks:100, time:'৩ ঘণ্টা' },
+  { name:'সাপ্তাহিক পরীক্ষা', icon:'📝', color:'emerald', subject:'সাধারণ', class:'যেকোনো', marks:50, time:'১ ঘণ্টা' },
+  { name:'মাসিক পরীক্ষা',    icon:'📅', color:'purple', subject:'সাধারণ', class:'যেকোনো', marks:100, time:'২ ঘণ্টা' },
+];
+
+function initTemplates() {
+  const grid = document.getElementById('templates-grid');
+  if(!grid) return;
+  grid.innerHTML = templates.map((t,i) => `
+    <div class="glass-card stat-card ${t.color}" style="cursor:pointer;padding:22px;" data-aos="fade-up" data-aos-delay="${i*60}" onclick="applyTemplate(${i})">
+      <div style="font-size:32px;margin-bottom:10px;">${t.icon}</div>
+      <div style="font-family:var(--font-display);font-size:16px;font-weight:700;">${t.name}</div>
+      <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;">${t.subject} | ${t.class}</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">পূর্ণমান: ${t.marks} | সময়: ${t.time}</div>
+      <button class="btn btn-outline btn-sm" style="margin-top:14px;width:100%;">
+        <i class="fas fa-play"></i> এই টেমপ্লেট ব্যবহার করুন
+      </button>
+    </div>`).join('');
+}
+
+function applyTemplate(idx) {
+  const t = templates[idx];
+  if(!t) return;
+  document.getElementById('inp-subject')?.setAttribute('value', t.subject);
+  if(document.getElementById('inp-subject')) document.getElementById('inp-subject').value = t.subject;
+  if(document.getElementById('inp-class')) document.getElementById('inp-class').value = t.class;
+  if(document.getElementById('inp-marks')) document.getElementById('inp-marks').value = t.marks;
+  if(document.getElementById('inp-time'))  document.getElementById('inp-time').value = t.time;
+  switchPage('maker');
+  showToast(`"${t.name}" টেমপ্লেট প্রয়োগ করা হয়েছে ✨`, 'success');
+}
+
+/* ============================================================
+   OMR SHEET
+   ============================================================ */
+function generateOMR() {
+  const count = parseInt(document.getElementById('omr-count')?.value)||30;
+  const optCount = parseInt(document.getElementById('omr-options')?.value)||4;
+  const optLetters = ['ক','খ','গ','ঘ','ঙ'].slice(0,optCount);
+  const sheet = document.getElementById('omr-sheet');
+  if(!sheet) return;
+  
+  let html = '';
+  for(let i=1;i<=count;i++){
+    html += `<div class="omr-row">
+      <span class="omr-num">${toBn(i)}</span>
+      <div class="omr-bubbles">
+        ${optLetters.map(l=>`<div class="omr-bubble" onclick="this.classList.toggle('filled')">${l}</div>`).join('')}
+      </div>
+    </div>`;
+  }
+  sheet.innerHTML = html;
+}
+
+function downloadOMR() {
+  const el = document.getElementById('omr-sheet');
+  if(!el) return;
+  showToast('OMR শিট ডাউনলোড হচ্ছে...', 'info', 3000);
+  // Simple print
+  window.print();
+}
+
+/* ============================================================
+   SAVE / LOAD / STORAGE
+   ============================================================ */
+function saveToStorage() {
+  const data = {
+    school:      document.getElementById('inp-school')?.value||'',
+    exam:        document.getElementById('inp-exam')?.value||'',
+    subject:     document.getElementById('inp-subject')?.value||'',
+    class:       document.getElementById('inp-class')?.value||'',
+    time:        document.getElementById('inp-time')?.value||'',
+    marks:       document.getElementById('inp-marks')?.value||'',
+    shortQs:     document.getElementById('shortQTextarea')?.value||'',
+    shortCount:  document.getElementById('short-answer-count')?.value||'10',
+    shortMark:   document.getElementById('short-mark-each')?.value||'1',
+    cqAnswerCount: document.getElementById('cq-answer-count')?.value||'5',
+    cqBlocks:    State.cqBlocks,
+    mcqAnswerCount: document.getElementById('mcq-answer-count')?.value||'25',
+    questionBank: State.questionBank,
+    logoData:    State.logoData,
+    stats:       State.stats||{},
+    savedAt:     new Date().toISOString(),
+  };
+  localStorage.setItem('qmp_draft', JSON.stringify(data));
+  State.lastSaved = new Date();
+}
+
+function loadFromStorage() {
+  const saved = localStorage.getItem('qmp_draft');
+  const theme = localStorage.getItem('qmp_theme');
+  if(theme) { State.theme = theme; document.documentElement.setAttribute('data-theme', theme); document.getElementById('dark-toggle') && (document.getElementById('dark-toggle').checked = theme==='dark'); document.getElementById('themeBtn') && (document.getElementById('themeBtn').innerHTML = theme==='dark'?'<i class="fas fa-moon"></i>':'<i class="fas fa-sun"></i>'); }
+  if(!saved) return;
+  try {
+    const d = JSON.parse(saved);
+    if(d.school)    document.getElementById('inp-school').value = d.school;
+    if(d.exam)      document.getElementById('inp-exam').value = d.exam;
+    if(d.subject)   document.getElementById('inp-subject').value = d.subject;
+    if(d.class && document.getElementById('inp-class')) document.getElementById('inp-class').value = d.class;
+    if(d.time)      document.getElementById('inp-time').value = d.time;
+    if(d.marks)     document.getElementById('inp-marks').value = d.marks;
+    if(d.shortQs && document.getElementById('shortQTextarea')) document.getElementById('shortQTextarea').value = d.shortQs;
+    if(d.shortCount && document.getElementById('short-answer-count')) document.getElementById('short-answer-count').value = d.shortCount;
+    if(d.questionBank) State.questionBank = d.questionBank;
+    if(d.logoData) { State.logoData = d.logoData; const img=document.getElementById('logo-img'); const prev=document.getElementById('logo-preview'); if(img&&prev){img.src=d.logoData;prev.style.display='flex';} }
+    if(d.stats) State.stats = d.stats;
+  } catch(e) { console.log('Load error:', e); }
+}
+
+function saveDraft() {
+  saveToStorage();
+  showToast(`ড্রাফট সংরক্ষিত হয়েছে (${new Date().toLocaleTimeString('bn-BD')}) ✅`, 'success');
+}
+
+function clearDraft() {
+  Swal.fire({
+    title:'ড্রাফট মুছবেন?',
+    text:'সব তথ্য মুছে যাবে!',
+    icon:'warning',
+    showCancelButton:true,
+    confirmButtonText:'হ্যাঁ, মুছুন',
+    cancelButtonText:'বাতিল',
+    background: getComputedStyle(document.documentElement).getPropertyValue('--bg-surface').trim() || '#0f0a1e',
+    color: '#f0ecff',
+    confirmButtonColor:'#ff3d9a',
+    cancelButtonColor:'#6c3fef'
+  }).then(r => {
+    if(r.isConfirmed) {
+      ['inp-school','inp-exam','inp-subject','inp-time','inp-marks','shortQTextarea'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+      document.getElementById('inp-class').value='';
+      State.cqBlocks.forEach(b=>{const el=document.getElementById(`uddipok-${b.id}`);if(el)el.innerHTML='';['q1','q2','q3','q4'].forEach(q=>{const inp=document.getElementById(`cq${b.id}${q}`);if(inp)inp.value='';});});
+      localStorage.removeItem('qmp_draft');
+      showToast('ড্রাফট মুছে ফেলা হয়েছে','info');
     }
+  });
+}
 
-    function downloadPDF() {
-        const element = document.getElementById('printable');
-        if(!element) return alert("প্রথমে Preview করুন!");
-        html2pdf().set({ 
-            margin: 0, 
-            filename: 'Question.pdf', 
-            html2canvas: { scale: 3 }, 
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } 
-        }).from(element).save();
+function clearAllData() {
+  Swal.fire({
+    title:'সব ডেটা মুছবেন?',
+    text:'প্রশ্ন ব্যাংক ও সেটিংসহ সব ডেটা মুছে যাবে!',
+    icon:'error',
+    showCancelButton:true,
+    confirmButtonText:'হ্যাঁ, মুছুন',
+    cancelButtonText:'বাতিল',
+    background: '#0f0a1e', color: '#f0ecff',
+    confirmButtonColor:'#ff3d9a', cancelButtonColor:'#6c3fef'
+  }).then(r=>{ if(r.isConfirmed){ localStorage.clear(); State.questionBank=[]; updateStats(); showToast('সব ডেটা মুছে ফেলা হয়েছে','info'); } });
+}
+
+function exportData() {
+  const data = localStorage.getItem('qmp_draft')||'{}';
+  const blob = new Blob([data], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'qmp_backup.json';
+  a.click();
+  showToast('ডেটা এক্সপোর্ট সম্পন্ন', 'success');
+}
+function importData() {
+  const input = document.createElement('input');
+  input.type='file'; input.accept='.json';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try { localStorage.setItem('qmp_draft', ev.target.result); loadFromStorage(); showToast('ডেটা ইম্পোর্ট সম্পন্ন ✅','success'); }
+      catch(err) { showToast('ফাইল পড়তে সমস্যা হয়েছে','error'); }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+function saveSettings() { saveToStorage(); }
+
+/* ============================================================
+   UNDO / REDO (Simple Stack)
+   ============================================================ */
+function undoAction() { showToast('Undo: এই ফিচারটি পরিপূর্ণ সংস্করণে উপলব্ধ', 'info', 2000); }
+function redoAction() { showToast('Redo: এই ফিচারটি পরিপূর্ণ সংস্করণে উপলব্ধ', 'info', 2000); }
+
+/* ============================================================
+   AUTOSAVE
+   ============================================================ */
+function setupAutosave() {
+  State.autosaveInterval = setInterval(() => {
+    if(document.getElementById('autosave-toggle')?.checked) {
+      saveToStorage();
     }
+  }, 30000);
+}
+
+/* ============================================================
+   STATS
+   ============================================================ */
+function updateStats() {
+  const total = (State.questionBank?.length||0) + State.cqBlocks.length;
+  const qs = State.questionBank?.length || 0;
+  const ai = State.stats?.aiGenerated || 0;
+  const fav = State.questionBank?.filter(q=>q.fav)?.length || 0;
+
+  animateCounter('stat-total', total);
+  animateCounter('stat-questions', qs);
+  animateCounter('stat-ai', ai);
+  animateCounter('stat-fav', fav);
+}
+
+function animateCounter(id, target) {
+  const el = document.getElementById(id);
+  if(!el) return;
+  let cur = 0;
+  const step = Math.max(1, Math.floor(target/20));
+  const t = setInterval(()=>{ cur = Math.min(cur+step, target); el.textContent = toBn(cur); if(cur>=target) clearInterval(t); }, 50);
+}
+
+function renderRecentFiles() {
+  const list = document.getElementById('recent-files-list');
+  if(!list) return;
+  const recentQs = State.questionBank.slice(-3).reverse();
+  if(recentQs.length === 0) {
+    list.innerHTML = `<div class="empty-state" style="padding:30px;"><span class="empty-icon">📂</span><div class="empty-title">কোনো ফাইল নেই</div><div class="empty-sub">প্রথম প্রশ্নপত্র তৈরি করুন</div></div>`;
+    return;
+  }
+  list.innerHTML = recentQs.map(q=>`
+    <div class="file-card" style="margin-bottom:8px;">
+      <div class="file-icon" style="background:rgba(108,63,239,0.15);color:var(--purple-light);">📄</div>
+      <div>
+        <div class="file-name">${q.type==='ai'?'AI জেনারেটেড':'প্রশ্নপত্র'}</div>
+        <div class="file-meta">${q.created}</div>
+      </div>
+      <div class="file-actions">
+        <button class="btn btn-ghost btn-sm" onclick="toggleFav(${q.id})"><i class="fas fa-star" style="color:${q.fav?'var(--gold)':'var(--text-muted)'};"></i></button>
+        <button class="btn btn-danger btn-sm" onclick="deleteQuestion(${q.id})"><i class="fas fa-trash"></i></button>
+      </div>
+    </div>`).join('');
+}
+
+function filterQuestionBank(val) { /* search logic */ }
+function filterByType(val) { /* filter logic */ }
+function filterBySubject(val) { /* filter logic */ }
+function toggleFavFilter() { showToast('ফেভারিট ফিল্টার', 'info', 1500); }
+function toggleFav(id) {
+  const q = State.questionBank.find(q=>q.id===id);
+  if(q){ q.fav=!q.fav; saveToStorage(); renderRecentFiles(); updateStats(); }
+}
+function deleteQuestion(id) {
+  State.questionBank = State.questionBank.filter(q=>q.id!==id);
+  saveToStorage(); renderRecentFiles(); updateStats();
+  showToast('প্রশ্ন মুছে ফেলা হয়েছে','info');
+}
+function toggleWatermark(el) { showToast(el.checked ? 'ওয়াটারমার্ক চালু' : 'ওয়াটারমার্ক বন্ধ', 'info', 1500); }
+
+/* ============================================================
+   KEYBOARD SHORTCUTS
+   ============================================================ */
+document.addEventListener('keydown', e => {
+  if((e.ctrlKey||e.metaKey) && e.key === 's') { e.preventDefault(); saveDraft(); }
+  if((e.ctrlKey||e.metaKey) && e.key === 'p') { e.preventDefault(); switchPage('preview'); setTimeout(generatePreview,200); }
+  if((e.ctrlKey||e.metaKey) && e.key === 'z') { e.preventDefault(); undoAction(); }
+  if((e.ctrlKey||e.metaKey) && e.key === 'y') { e.preventDefault(); redoAction(); }
+});
+
+/* ============================================================
+   RESIZE HANDLER
+   ============================================================ */
+window.addEventListener('resize', () => {
+  if(window.innerWidth > 900) {
+    document.getElementById('sidebar').classList.remove('mobile-open');
+    document.getElementById('mobile-overlay').style.display = 'none';
+  }
+});
+
+/* ============================================================
+   INPUT CHANGE HANDLERS FOR MARKS
+   ============================================================ */
+['short-answer-count','short-mark-each','cq-answer-count','mcq-answer-count','mcq-mark-each','inp-marks'].forEach(id => {
+  const el = document.getElementById(id);
+  if(el) el.addEventListener('input', updateMarksSummary);
+});
+
+/* ============================================================
+   PWA SERVICE WORKER (inline)
+   ============================================================ */
+if('serviceWorker' in navigator) {
+  const sw = `
+    self.addEventListener('install', e => { e.waitUntil(caches.open('qmp-v1').then(c=>c.addAll(['/']))); });
+    self.addEventListener('fetch', e => { e.respondWith(fetch(e.request).catch(()=>caches.match(e.request))); });
+  `;
+  const blob = new Blob([sw], {type:'text/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
+}
+
+/* ============================================================
+   ANIME.JS GLOW EFFECTS
+   ============================================================ */
+document.querySelectorAll('.btn-primary, .btn-cyber').forEach(btn => {
+  btn.addEventListener('mouseenter', () => {
+    anime({ targets: btn, scale:[1, 1.03], duration:200, easing:'easeOutElastic(1,.5)' });
+  });
+  btn.addEventListener('mouseleave', () => {
+    anime({ targets: btn, scale:[1.03, 1], duration:200, easing:'easeOutElastic(1,.5)' });
+  });
+});
+
+// Initial page setup - ensure tab-cq correctly shows on first render
+document.addEventListener('DOMContentLoaded', () => {
+  const tabMaker = document.getElementById('page-maker');
+  if(tabMaker) {
+    // tab-short should be active initially
+    const shortTab = document.getElementById('tab-short');
+    if(shortTab) shortTab.classList.add('active');
+  }
+});
+
 </script>
+
+<!-- PRINT STYLES -->
+<style>
+@media print {
+  @page { size: A4 landscape; margin: 0; }
+  body > *:not(#printable) { display: none !important; }
+  #app { display: none !important; }
+  #toast-container, #fab, #mobile-overlay { display: none !important; }
+  #printable { display: grid !important; width: 297mm; height: 210mm; margin: 0; box-shadow: none; }
+  .paper-column { color: #000 !important; }
+}
+</style>
 </body>
 </html>
